@@ -899,7 +899,7 @@ migrate((app) => {
   }
 ];
 
-  return importCollections(collections, false);
+  return app.importCollections(collections, false);
 }, (app) => {
   // Down migration
   return null;
