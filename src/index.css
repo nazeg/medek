@@ -16,6 +16,12 @@
   --color-text: #1e293b;
   --color-text-muted: #64748b;
   --color-glass: rgba(255, 255, 255, 0.7);
+  --animate-slide-in: slide-in 0.3s ease-out;
+}
+
+@keyframes slide-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 /* Base resets & utilities */

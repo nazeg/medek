@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { pb } from '../pb';
 import { Plus, Trash2, Award } from 'lucide-react';
 
-export default function PCOutcomes({ currentProgId, refreshAll, addLog, triggerPrompt, triggerConfirm }) {
+export default function PCOutcomes({ currentProgId, refreshAll, addLog, triggerPrompt, triggerConfirm, triggerAlert, addToast }) {
   const [pcs, setPcs] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -38,7 +38,7 @@ export default function PCOutcomes({ currentProgId, refreshAll, addLog, triggerP
       // Fast updates in state
       setPcs(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
     } catch (e) {
-      alert("Hata: " + e.message);
+      triggerAlert("Hata", "Hata: " + e.message);
       fetchPcs(); // Revert on failure
     }
   };
@@ -55,7 +55,7 @@ export default function PCOutcomes({ currentProgId, refreshAll, addLog, triggerP
           // Also refresh global lists if necessary
           await refreshAll(currentProgId, null, null);
         } catch (e) {
-          alert("Hata: " + e.message);
+          triggerAlert("Hata", "Hata: " + e.message);
         }
       }
     );
@@ -83,7 +83,7 @@ export default function PCOutcomes({ currentProgId, refreshAll, addLog, triggerP
           fetchPcs();
           await refreshAll(currentProgId, null, null);
         } catch (e) {
-          alert("Hata: " + e.message);
+          triggerAlert("Hata", "Hata: " + e.message);
         }
       }
     );

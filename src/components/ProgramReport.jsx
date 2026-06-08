@@ -3,7 +3,7 @@ import { pb } from '../pb';
 import { Bar, Radar } from 'react-chartjs-2';
 import { Download, Library, Calendar, RefreshCw } from 'lucide-react';
 
-export default function ProgramReport({ programs, terms, addLog }) {
+export default function ProgramReport({ programs, terms, addLog, triggerAlert, addToast }) {
   const [selectedProgId, setSelectedProgId] = useState('');
   const [matrixSelections, setMatrixSelections] = useState({}); // termId_grade -> boolean
   const [loading, setLoading] = useState(false);
@@ -56,14 +56,14 @@ export default function ProgramReport({ programs, terms, addLog }) {
 
   const handleGenerateReport = async () => {
     if (!selectedProgId) {
-      alert("Lütfen bir program seçiniz!");
+      triggerAlert("Uyarı", "Lütfen bir program seçiniz!");
       return;
     }
 
     // Filter active selections
     const selectedCells = Object.keys(matrixSelections).filter(k => matrixSelections[k]);
     if (selectedCells.length === 0) {
-      alert("Lütfen dönem-sınıf matrisinden en az bir hücre seçiniz!");
+      triggerAlert("Uyarı", "Lütfen dönem-sınıf matrisinden en az bir hücre seçiniz!");
       return;
     }
 
@@ -81,7 +81,7 @@ export default function ProgramReport({ programs, terms, addLog }) {
         filter: `program_id = "${selectedProgId}"`,
       });
       if (pcs.length === 0) {
-        alert("Seçili programa ait PÇ tanımlanmamış!");
+        triggerAlert("Hata", "Seçili programa ait PÇ tanımlanmamış!");
         setLoading(false);
         return;
       }
@@ -247,7 +247,7 @@ export default function ProgramReport({ programs, terms, addLog }) {
 
       addLog(`Program Raporu Hazırlandı: ${coursePcRows.length} adet ders analize katıldı.`);
     } catch (e) {
-      alert("Hata: " + e.message);
+      triggerAlert("Hata", e.message);
       console.error(e);
     } finally {
       setLoading(false);
@@ -282,7 +282,7 @@ export default function ProgramReport({ programs, terms, addLog }) {
         console.error(err);
       });
     } else {
-      alert("PDF motoru yükleniyor. Lütfen tekrar deneyin.");
+      addToast("PDF motoru yükleniyor. Lütfen tekrar deneyin.", "success");
       const script = document.createElement('script');
       script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
       document.body.appendChild(script);

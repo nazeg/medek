@@ -29,7 +29,7 @@ ChartJS.register(
   ChartDataLabels
 );
 
-export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) {
+export default function AnalysisPanel({ currentProgId, currentDersId, addLog, triggerAlert, addToast }) {
   const [activeMod, setActiveMod] = useState('Vize');
   const [loading, setLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
@@ -428,7 +428,7 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
         console.error(err);
       });
     } else {
-      alert("PDF motoru yükleniyor. Lütfen tekrar deneyin.");
+      triggerAlert("Uyarı", "PDF motoru yükleniyor. Lütfen tekrar deneyin.");
       const script = document.createElement('script');
       script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
       document.body.appendChild(script);

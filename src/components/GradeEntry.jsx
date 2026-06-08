@@ -4,7 +4,7 @@ import ExcelJS from 'exceljs';
 import * as XLSX from 'xlsx';
 import { Plus, Trash2, Download, Upload } from 'lucide-react';
 
-export default function GradeEntry({ currentDersId, addLog, triggerPrompt, triggerConfirm, triggerFields }) {
+export default function GradeEntry({ currentDersId, addLog, triggerPrompt, triggerConfirm, triggerFields, triggerAlert, addToast }) {
   const [students, setStudents] = useState([]);
   const [grades, setGrades] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -55,7 +55,7 @@ export default function GradeEntry({ currentDersId, addLog, triggerPrompt, trigg
       await pb.collection('students').update(id, { [field]: val });
       setStudents(prev => prev.map(s => s.id === id ? { ...s, [field]: val } : s));
     } catch (e) {
-      alert("Hata: " + e.message);
+      triggerAlert("Hata", e.message);
     }
   };
 
@@ -64,7 +64,7 @@ export default function GradeEntry({ currentDersId, addLog, triggerPrompt, trigg
 
     // Classic questions score validation
     if (maxScore !== null && scoreVal > maxScore) {
-      alert(`UYARI: Bu soru için tanımlanan maksimum puan ${maxScore}'dır. \nGirilen ${scoreVal} puanı sınırı aşmaktadır!`);
+      triggerAlert("Uyarı", `Bu soru için tanımlanan maksimum puan ${maxScore}'dır. Girilen ${scoreVal} puanı sınırı aşmaktadır!`);
       return;
     }
 
@@ -98,7 +98,7 @@ export default function GradeEntry({ currentDersId, addLog, triggerPrompt, trigg
           addLog("Öğrenci silindi.");
           fetchGradesData();
         } catch (e) {
-          alert("Hata: " + e.message);
+          triggerAlert("Hata", e.message);
         }
       }
     );
@@ -125,7 +125,7 @@ export default function GradeEntry({ currentDersId, addLog, triggerPrompt, trigg
             addLog(`Öğrenci eklendi: ${no} - ${ad}`);
             fetchGradesData();
           } catch (e) {
-            alert("Hata: " + e.message);
+            triggerAlert("Hata", e.message);
           }
         }
       }
@@ -144,7 +144,7 @@ export default function GradeEntry({ currentDersId, addLog, triggerPrompt, trigg
   // Excel Templates Download
   const downloadTemplate = async () => {
     if (!currentDersId) {
-      alert("Önce bir ders seçmelisiniz!");
+      triggerAlert("Uyarı", "Önce bir ders seçmelisiniz!");
       return;
     }
 
@@ -235,7 +235,7 @@ export default function GradeEntry({ currentDersId, addLog, triggerPrompt, trigg
   // Import student grades from Excel file
   const handleImportExcel = async (e) => {
     if (!currentDersId) {
-      alert("Önce bir ders seçmelisiniz!");
+      triggerAlert("Uyarı", "Önce bir ders seçmelisiniz!");
       return;
     }
     const file = e.target.files[0];
@@ -261,7 +261,7 @@ export default function GradeEntry({ currentDersId, addLog, triggerPrompt, trigg
         }
 
         if (!headers.includes("No") || !headers.includes("Ad Soyad")) {
-          alert("Hata: Yüklenen dosyada 'No' veya 'Ad Soyad' sütunları bulunamadı! Şablon başlıklarını değiştirmeyin.");
+          triggerAlert("Hata", "Yüklenen dosyada 'No' veya 'Ad Soyad' sütunları bulunamadı! Şablon başlıklarını değiştirmeyin.");
           return;
         }
 
@@ -335,7 +335,7 @@ export default function GradeEntry({ currentDersId, addLog, triggerPrompt, trigg
         addLog(`${studentCount} yeni öğrenci ve toplam ${gradeCount} not işlendi.`);
         fetchGradesData();
       } catch (err) {
-        alert("Hata: " + err.message);
+        triggerAlert("Hata", err.message);
       } finally {
         e.target.value = '';
       }

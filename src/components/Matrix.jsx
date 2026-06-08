@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { pb } from '../pb';
 import { Grid3X3, RefreshCw } from 'lucide-react';
 
-export default function Matrix({ currentProgId, currentDersId, addLog }) {
+export default function Matrix({ currentProgId, currentDersId, addLog, triggerAlert, addToast }) {
   const [pcs, setPcs] = useState([]);
   const [dcs, setDcs] = useState([]);
   const [matrixData, setMatrixData] = useState([]);
@@ -49,7 +49,7 @@ export default function Matrix({ currentProgId, currentDersId, addLog }) {
   const handleValueChange = async (dcCode, pcCode, valueStr) => {
     const val = parseInt(valueStr) || 0;
     if (val < 0 || val > 5) {
-      alert("Matris değeri 0 ile 5 arasında olmalıdır!");
+      triggerAlert("Uyarı", "Matris değeri 0 ile 5 arasında olmalıdır!");
       return;
     }
 
@@ -72,7 +72,7 @@ export default function Matrix({ currentProgId, currentDersId, addLog }) {
         setMatrixData(prev => [...prev, record]);
       }
     } catch (e) {
-      alert("Hata: " + e.message);
+      triggerAlert("Hata", e.message);
       fetchMatrix(); // Reload on failure
     }
   };

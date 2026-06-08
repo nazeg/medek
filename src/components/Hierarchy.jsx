@@ -11,7 +11,8 @@ export default function Hierarchy({
   currentTermId, setCurrentTermId,
   currentDersId, setCurrentDersId,
   refreshAll, addLog,
-  triggerPrompt, triggerConfirm
+  triggerPrompt, triggerConfirm,
+  triggerAlert, addToast
 }) {
   const [progLocked, setProgLocked] = useState(false);
   const [termLocked, setTermLocked] = useState(false);
@@ -63,7 +64,7 @@ export default function Hierarchy({
         addLog(`Yeni program eklendi: ${name}`);
         await refreshAll(record.id, currentTermId, currentDersId);
       } catch (e) {
-        alert("Hata: " + e.message);
+        triggerAlert("Hata", e.message);
       }
     });
   };
@@ -79,7 +80,7 @@ export default function Hierarchy({
         addLog(`Program güncellendi: ${name}`);
         await refreshAll(currentProgId, currentTermId, currentDersId);
       } catch (e) {
-        alert("Hata: " + e.message);
+        triggerAlert("Hata", e.message);
       }
     });
   };
@@ -95,7 +96,7 @@ export default function Hierarchy({
           addLog(`Program silindi.`);
           await refreshAll(null, currentTermId, null);
         } catch (e) {
-          alert("Hata: " + e.message);
+          triggerAlert("Hata", e.message);
         }
       }
     );
@@ -109,7 +110,7 @@ export default function Hierarchy({
         addLog(`Yeni Dönem eklendi: ${name}`);
         await refreshAll(currentProgId, record.id, currentDersId);
       } catch (e) {
-        alert("Hata: " + e.message);
+        triggerAlert("Hata", e.message);
       }
     });
   };
@@ -125,7 +126,7 @@ export default function Hierarchy({
         addLog(`Dönem güncellendi: ${name}`);
         await refreshAll(currentProgId, currentTermId, currentDersId);
       } catch (e) {
-        alert("Hata: " + e.message);
+        triggerAlert("Hata", e.message);
       }
     });
   };
@@ -141,7 +142,7 @@ export default function Hierarchy({
           addLog("Dönem silindi.");
           await refreshAll(currentProgId, null, null);
         } catch (e) {
-          alert("Hata: " + e.message);
+          triggerAlert("Hata", e.message);
         }
       }
     );
@@ -150,7 +151,7 @@ export default function Hierarchy({
   // Course Add / Edit trigger
   const handleOpenCourseModal = (editData = null) => {
     if (!currentProgId || !currentTermId) {
-      alert("Önce Program ve Dönem seçmelisiniz!");
+      triggerAlert("Uyarı", "Önce Program ve Dönem seçmelisiniz!");
       return;
     }
     setSelectedDers(editData);
@@ -180,15 +181,15 @@ export default function Hierarchy({
 
   const handleSaveCourse = async () => {
     if (!dersKodu.trim()) {
-      alert("Ders Kodu zorunludur!");
+      triggerAlert("Uyarı", "Ders Kodu zorunludur!");
       return;
     }
     if (!dersAdi.trim()) {
-      alert("Ders Adı zorunludur!");
+      triggerAlert("Uyarı", "Ders Adı zorunludur!");
       return;
     }
     if (totalPercentage !== 100) {
-      alert(`Sınav ağırlık toplamı 100 olmalıdır! Şu an: ${totalPercentage}%`);
+      triggerAlert("Uyarı", `Sınav ağırlık toplamı 100 olmalıdır! Şu an: ${totalPercentage}%`);
       return;
     }
 
@@ -220,7 +221,7 @@ export default function Hierarchy({
         await refreshAll(currentProgId, currentTermId, record.id);
       }
     } catch (e) {
-      alert("Hata: " + e.message);
+      triggerAlert("Hata", e.message);
     }
   };
 
@@ -235,7 +236,7 @@ export default function Hierarchy({
           addLog("Ders silindi.");
           await refreshAll(currentProgId, currentTermId, null);
         } catch (e) {
-          alert("Hata: " + e.message);
+          triggerAlert("Hata", e.message);
         }
       }
     );

@@ -4,7 +4,7 @@ import ExcelJS from 'exceljs';
 import * as XLSX from 'xlsx';
 import { Plus, Trash2, Download, Upload, ChevronDown } from 'lucide-react';
 
-export default function QuestionBank({ currentProgId, currentDersId, addLog, triggerPrompt, triggerConfirm }) {
+export default function QuestionBank({ currentProgId, currentDersId, addLog, triggerPrompt, triggerConfirm, triggerAlert, addToast }) {
   const [questions, setQuestions] = useState([]);
   const [dcs, setDcs] = useState([]);
   const [pcs, setPcs] = useState([]);
@@ -74,7 +74,7 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
         const totalOthers = otherQsOfExam.reduce((sum, q) => sum + (parseFloat(q.max_score) || 0), 0);
         
         if (totalOthers + newVal > 100) {
-          alert(`UYARI: ${targetQ.exam_type} sınavı için toplam puan 100'ü geçemez!\n\nDiğer soruların toplamı: ${totalOthers}\nSizin girdiğiniz: ${newVal}\nToplam: ${totalOthers + newVal}\n\nİşlem iptal edildi.`);
+          triggerAlert("Uyarı", `${targetQ.exam_type} sınavı için toplam puan 100'ü geçemez!\n\nDiğer soruların toplamı: ${totalOthers}\nSizin girdiğiniz: ${newVal}\nToplam: ${totalOthers + newVal}\n\nİşlem iptal edildi.`);
           fetchQuestionsAndOutcomes(); // Reset state
           return;
         }
@@ -94,7 +94,7 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
       // Update local state
       setQuestions(prev => prev.map(q => q.id === id ? { ...q, ...updatePayload } : q));
     } catch (e) {
-      alert("Hata: " + e.message);
+      triggerAlert("Hata", e.message);
       fetchQuestionsAndOutcomes();
     }
   };
@@ -120,7 +120,7 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
       setQuestions(prev => prev.map(q => q.id === id ? { ...q, dc_code: joined } : q));
       addLog(`Soru DÇ ilişkisi güncellendi: ${targetQ.code} -> ${joined}`);
     } catch (e) {
-      alert("Hata: " + e.message);
+      triggerAlert("Hata", e.message);
     }
   };
 
@@ -134,7 +134,7 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
           addLog("Soru silindi.");
           fetchQuestionsAndOutcomes();
         } catch (e) {
-          alert("Hata: " + e.message);
+          triggerAlert("Hata", e.message);
         }
       }
     );
@@ -166,7 +166,7 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
           addLog(`Yeni soru tanımlandı: ${code} (${examType})`);
           fetchQuestionsAndOutcomes();
         } catch (e) {
-          alert("Hata: " + e.message);
+          triggerAlert("Hata", e.message);
         }
       }
     );
@@ -258,7 +258,7 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
   // Import questions from Excel file
   const handleImportExcel = async (e) => {
     if (!currentDersId) {
-      alert("Önce bir ders seçmelisiniz!");
+      triggerAlert("Uyarı", "Önce bir ders seçmelisiniz!");
       return;
     }
     const file = e.target.files[0];
@@ -299,13 +299,13 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
         }
 
         if (missingKeys.length > 0) {
-          alert("Hata: Yüklenen dosyada şu zorunlu sütunlar bulunamadı:\n" + missingKeys.map(k => `- ${k}`).join('\n'));
+          triggerAlert("Hata", "Yüklenen dosyada şu zorunlu sütunlar bulunamadı:\n" + missingKeys.map(k => `- ${k}`).join('\n'));
           return;
         }
 
         const rows = XLSX.utils.sheet_to_json(firstSheet);
         if (rows.length === 0) {
-          alert("Yüklenecek veri bulunamadı.");
+          triggerAlert("Uyarı", "Yüklenecek veri bulunamadı.");
           return;
         }
 
@@ -328,7 +328,7 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
         fetchQuestionsAndOutcomes();
         setActiveFilter('Tümü');
       } catch (err) {
-        alert("Dosya okuma hatası: " + err.message);
+        triggerAlert("Hata", "Dosya okuma hatası: " + err.message);
       } finally {
         e.target.value = ''; // Reset file input
       }

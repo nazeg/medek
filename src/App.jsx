@@ -11,7 +11,7 @@ import AnalysisPanel from './components/AnalysisPanel';
 import ProgramReport from './components/ProgramReport';
 import { 
   Home, Award, BookOpen, Grid3X3, FileText, 
-  GraduationCap, BarChart2, Library, LogOut, Terminal, User, AlertCircle, Info, HelpCircle
+  GraduationCap, BarChart2, Library, LogOut, Terminal, User, AlertCircle, Info, HelpCircle, CheckCircle2, X, AlertTriangle
 } from 'lucide-react';
 
 export default function App() {
@@ -33,7 +33,7 @@ export default function App() {
   // --- Global Custom Dialog Overlay State ---
   const [dialog, setDialog] = useState({
     isOpen: false,
-    type: 'prompt', // 'prompt', 'confirm', 'fields'
+    type: 'prompt', // 'prompt', 'confirm', 'fields', 'alert'
     title: '',
     message: '',
     inputValue: '',
@@ -41,6 +41,17 @@ export default function App() {
     onConfirm: () => {},
     onCancel: () => {}
   });
+
+  // --- Toast Notifications ---
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (message, type = 'error', duration = 4000) => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, duration);
+  };
 
   const addLog = (m) => {
     const time = new Date().toLocaleTimeString();
@@ -61,6 +72,19 @@ export default function App() {
   };
 
   // --- Dialog Triggers ---
+  const triggerAlert = (title, message) => {
+    setDialog({
+      isOpen: true,
+      type: 'alert',
+      title,
+      message,
+      inputValue: '',
+      fields: [],
+      onConfirm: closeDialog,
+      onCancel: closeDialog
+    });
+  };
+
   const triggerPrompt = (title, message, defaultValue, placeholder, onConfirm) => {
     setDialog({
       isOpen: true,
@@ -129,6 +153,30 @@ export default function App() {
     }
   };
 
+  const toastIcon = (type) => {
+    switch (type) {
+      case 'success': return <CheckCircle2 size={18} />;
+      case 'warning': return <AlertTriangle size={18} />;
+      default: return <AlertCircle size={18} />;
+    }
+  };
+
+  const toastBg = (type) => {
+    switch (type) {
+      case 'success': return 'bg-emerald-50 border-emerald-200 text-emerald-800';
+      case 'warning': return 'bg-amber-50 border-amber-200 text-amber-800';
+      default: return 'bg-red-50 border-red-200 text-red-800';
+    }
+  };
+
+  const toastIconColor = (type) => {
+    switch (type) {
+      case 'success': return 'text-emerald-500';
+      case 'warning': return 'text-amber-500';
+      default: return 'text-red-500';
+    }
+  };
+
   // Global Fetch Data
   const refreshAll = async (progId = currentProgId, termId = currentTermId, dersId = currentDersId) => {
     if (!loggedIn) return;
@@ -178,6 +226,7 @@ export default function App() {
     } catch (e) {
       console.error(e);
       addLog(`Veri tabanı hatası: ${e.message}`);
+      addToast(`Veri tabanı hatası: ${e.message}`, "error");
     }
   };
 
@@ -266,6 +315,8 @@ export default function App() {
             setCurrentDersId={setCurrentDersId}
             refreshAll={refreshAll}
             addLog={addLog}
+            addToast={addToast}
+            triggerAlert={triggerAlert}
             triggerPrompt={triggerPrompt}
             triggerConfirm={triggerConfirm}
           />
@@ -276,6 +327,8 @@ export default function App() {
             currentProgId={currentProgId}
             refreshAll={refreshAll}
             addLog={addLog}
+            addToast={addToast}
+            triggerAlert={triggerAlert}
             triggerPrompt={triggerPrompt}
             triggerConfirm={triggerConfirm}
           />
@@ -286,6 +339,8 @@ export default function App() {
             currentDersId={currentDersId}
             refreshAll={refreshAll}
             addLog={addLog}
+            addToast={addToast}
+            triggerAlert={triggerAlert}
             triggerPrompt={triggerPrompt}
             triggerConfirm={triggerConfirm}
           />
@@ -296,6 +351,8 @@ export default function App() {
             currentProgId={currentProgId}
             currentDersId={currentDersId}
             addLog={addLog}
+            addToast={addToast}
+            triggerAlert={triggerAlert}
           />
         )}
 
@@ -304,6 +361,8 @@ export default function App() {
             currentProgId={currentProgId}
             currentDersId={currentDersId}
             addLog={addLog}
+            addToast={addToast}
+            triggerAlert={triggerAlert}
             triggerPrompt={triggerPrompt}
             triggerConfirm={triggerConfirm}
           />
@@ -313,6 +372,8 @@ export default function App() {
           <GradeEntry
             currentDersId={currentDersId}
             addLog={addLog}
+            addToast={addToast}
+            triggerAlert={triggerAlert}
             triggerPrompt={triggerPrompt}
             triggerConfirm={triggerConfirm}
             triggerFields={triggerFields}
@@ -324,6 +385,8 @@ export default function App() {
             currentProgId={currentProgId}
             currentDersId={currentDersId}
             addLog={addLog}
+            addToast={addToast}
+            triggerAlert={triggerAlert}
           />
         )}
 
@@ -332,6 +395,8 @@ export default function App() {
             programs={programs}
             terms={terms}
             addLog={addLog}
+            addToast={addToast}
+            triggerAlert={triggerAlert}
           />
         )}
       </div>
@@ -347,8 +412,8 @@ export default function App() {
         >
           <form onSubmit={handleDialogSubmit}>
             <div className="flex items-center p-6 pb-4 relative">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-xl mr-4 shrink-0 border ${dialog.type === 'confirm' ? 'bg-danger/10 text-danger border-danger/20' : dialog.type === 'prompt' ? 'bg-s/10 text-s border-s/20' : 'bg-success/10 text-success border-success/20'}`}>
-                {dialog.type === 'confirm' ? <AlertCircle size={20} /> : dialog.type === 'prompt' ? <HelpCircle size={20} /> : <Info size={20} />}
+              <div className={`flex items-center justify-center w-10 h-10 rounded-xl mr-4 shrink-0 border ${dialog.type === 'confirm' || dialog.type === 'alert' ? 'bg-danger/10 text-danger border-danger/20' : dialog.type === 'prompt' ? 'bg-s/10 text-s border-s/20' : 'bg-success/10 text-success border-success/20'}`}>
+                {dialog.type === 'confirm' || dialog.type === 'alert' ? <AlertCircle size={20} /> : dialog.type === 'prompt' ? <HelpCircle size={20} /> : <Info size={20} />}
               </div>
               <div>
                 <h3 className="font-display m-0 text-[16px] font-bold text-slate-900 tracking-tight">{dialog.title}</h3>
@@ -405,22 +470,45 @@ export default function App() {
             </div>
 
             <div className="flex justify-end gap-3 px-6 py-4 bg-slate-50/50 border-t border-slate-900/5">
-              <button 
-                type="button" 
-                className="px-4 py-2 rounded-xl font-semibold text-xs border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 cursor-pointer transition-all duration-200" 
-                onClick={closeDialog}
-              >
-                İptal
-              </button>
+              {dialog.type !== 'alert' && (
+                <button 
+                  type="button" 
+                  className="px-4 py-2 rounded-xl font-semibold text-xs border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 cursor-pointer transition-all duration-200" 
+                  onClick={closeDialog}
+                >
+                  İptal
+                </button>
+              )}
               <button 
                 type="submit" 
-                className={`px-4 py-2 rounded-xl font-semibold text-xs text-white shadow-md cursor-pointer transition-all duration-200 ${dialog.type === 'confirm' ? 'bg-gradient-to-r from-danger to-red-600 hover:from-red-600 hover:to-red-700 shadow-danger/25' : 'bg-gradient-to-r from-s to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-s/25'}`}
+                className={`px-4 py-2 rounded-xl font-semibold text-xs text-white shadow-md cursor-pointer transition-all duration-200 ${dialog.type === 'confirm' || dialog.type === 'alert' ? 'bg-gradient-to-r from-danger to-red-600 hover:from-red-600 hover:to-red-700 shadow-danger/25' : 'bg-gradient-to-r from-s to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-s/25'}`}
               >
-                {dialog.type === 'confirm' ? 'Evet, Onayla' : 'Tamam'}
+                {dialog.type === 'alert' ? 'Tamam' : dialog.type === 'confirm' ? 'Evet, Onayla' : 'Tamam'}
               </button>
             </div>
           </form>
         </div>
+      </div>
+
+      {/* --- Toast Container --- */}
+      <div className="fixed top-5 right-5 z-[99999] flex flex-col gap-2.5 pointer-events-none w-[380px] max-w-[90vw]">
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            className={`pointer-events-auto flex items-start gap-3 px-4 py-3.5 rounded-2xl border shadow-lg backdrop-blur-xl animate-slide-in ${toastBg(toast.type)}`}
+          >
+            <span className={`shrink-0 mt-0.5 ${toastIconColor(toast.type)}`}>
+              {toastIcon(toast.type)}
+            </span>
+            <span className="text-xs font-semibold leading-relaxed flex-1">{toast.message}</span>
+            <button
+              className="shrink-0 bg-transparent border-none p-0.5 cursor-pointer opacity-50 hover:opacity-100 transition-opacity"
+              onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        ))}
       </div>
 
     </div>

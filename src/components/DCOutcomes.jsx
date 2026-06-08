@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { pb } from '../pb';
 import { Plus, Trash2, BookOpen } from 'lucide-react';
 
-export default function DCOutcomes({ currentDersId, refreshAll, addLog, triggerPrompt, triggerConfirm }) {
+export default function DCOutcomes({ currentDersId, refreshAll, addLog, triggerPrompt, triggerConfirm, triggerAlert, addToast }) {
   const [dcs, setDcs] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +37,7 @@ export default function DCOutcomes({ currentDersId, refreshAll, addLog, triggerP
       addLog(`DÇ Güncellendi: ${value}`);
       setDcs(prev => prev.map(d => d.id === id ? { ...d, [field]: value } : d));
     } catch (e) {
-      alert("Hata: " + e.message);
+      triggerAlert("Hata", e.message);
       fetchDcs();
     }
   };
@@ -53,7 +53,7 @@ export default function DCOutcomes({ currentDersId, refreshAll, addLog, triggerP
           fetchDcs();
           await refreshAll(null, null, currentDersId);
         } catch (e) {
-          alert("Hata: " + e.message);
+          triggerAlert("Hata", e.message);
         }
       }
     );
@@ -81,7 +81,7 @@ export default function DCOutcomes({ currentDersId, refreshAll, addLog, triggerP
           fetchDcs();
           await refreshAll(null, null, currentDersId);
         } catch (e) {
-          alert("Hata: " + e.message);
+          triggerAlert("Hata", e.message);
         }
       }
     );
