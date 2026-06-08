@@ -8,63 +8,6 @@ migrate((app) => {
     "system": false,
     "fields": [
       {
-        "system": true,
-        "id": "id",
-        "name": "id",
-        "type": "id",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
-      {
-        "system": true,
-        "id": "username",
-        "name": "username",
-        "type": "text",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "min": 3,
-          "max": 150,
-          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]*$"
-        }
-      },
-      {
-        "system": true,
-        "id": "email",
-        "name": "email",
-        "type": "email",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "exceptEmailDomains": null,
-          "onlyEmailDomains": null
-        }
-      },
-      {
-        "system": true,
-        "id": "emailVisibility",
-        "name": "emailVisibility",
-        "type": "bool",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
-      {
-        "system": true,
-        "id": "verified",
-        "name": "verified",
-        "type": "bool",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
-      {
         "id": "users_name",
         "name": "name",
         "type": "text",
@@ -95,32 +38,6 @@ migrate((app) => {
           "maxSize": 5242880,
           "protected": false
         }
-      },
-      {
-        "system": false,
-        "id": "created",
-        "name": "created",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": false
-        }
-      },
-      {
-        "system": false,
-        "id": "updated",
-        "name": "updated",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": true
-        }
       }
     ],
     "indexes": [],
@@ -148,48 +65,12 @@ migrate((app) => {
     "system": false,
     "fields": [
       {
-        "system": true,
-        "id": "id",
-        "name": "id",
-        "type": "id",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
-      {
         "id": "prg_name_field",
         "name": "name",
         "type": "text",
         "required": true,
         "presentable": true,
         "options": {}
-      },
-      {
-        "system": false,
-        "id": "created",
-        "name": "created",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": false
-        }
-      },
-      {
-        "system": false,
-        "id": "updated",
-        "name": "updated",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": true
-        }
       }
     ],
     "indexes": [],
@@ -207,48 +88,12 @@ migrate((app) => {
     "system": false,
     "fields": [
       {
-        "system": true,
-        "id": "id",
-        "name": "id",
-        "type": "id",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
-      {
         "id": "trm_name_field",
         "name": "name",
         "type": "text",
         "required": true,
         "presentable": true,
         "options": {}
-      },
-      {
-        "system": false,
-        "id": "created",
-        "name": "created",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": false
-        }
-      },
-      {
-        "system": false,
-        "id": "updated",
-        "name": "updated",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": true
-        }
       }
     ],
     "indexes": [],
@@ -265,16 +110,6 @@ migrate((app) => {
     "type": "base",
     "system": false,
     "fields": [
-      {
-        "system": true,
-        "id": "id",
-        "name": "id",
-        "type": "id",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
       {
         "id": "crs_prog_id_fld",
         "name": "program_id",
@@ -359,32 +194,6 @@ migrate((app) => {
         "name": "pct_but",
         "type": "number",
         "options": {}
-      },
-      {
-        "system": false,
-        "id": "created",
-        "name": "created",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": false
-        }
-      },
-      {
-        "system": false,
-        "id": "updated",
-        "name": "updated",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": true
-        }
       }
     ],
     "indexes": [
@@ -403,16 +212,6 @@ migrate((app) => {
     "type": "base",
     "system": false,
     "fields": [
-      {
-        "system": true,
-        "id": "id",
-        "name": "id",
-        "type": "id",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
       {
         "id": "po_prog_id_fld",
         "name": "program_id",
@@ -436,32 +235,6 @@ migrate((app) => {
         "name": "description",
         "type": "text",
         "options": {}
-      },
-      {
-        "system": false,
-        "id": "created",
-        "name": "created",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": false
-        }
-      },
-      {
-        "system": false,
-        "id": "updated",
-        "name": "updated",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": true
-        }
       }
     ],
     "indexes": [],
@@ -478,16 +251,6 @@ migrate((app) => {
     "type": "base",
     "system": false,
     "fields": [
-      {
-        "system": true,
-        "id": "id",
-        "name": "id",
-        "type": "id",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
       {
         "id": "co_course_id_f",
         "name": "course_id",
@@ -511,32 +274,6 @@ migrate((app) => {
         "name": "description",
         "type": "text",
         "options": {}
-      },
-      {
-        "system": false,
-        "id": "created",
-        "name": "created",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": false
-        }
-      },
-      {
-        "system": false,
-        "id": "updated",
-        "name": "updated",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": true
-        }
       }
     ],
     "indexes": [],
@@ -553,16 +290,6 @@ migrate((app) => {
     "type": "base",
     "system": false,
     "fields": [
-      {
-        "system": true,
-        "id": "id",
-        "name": "id",
-        "type": "id",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
       {
         "id": "mat_course_id_",
         "name": "course_id",
@@ -593,32 +320,6 @@ migrate((app) => {
         "name": "value",
         "type": "number",
         "options": {}
-      },
-      {
-        "system": false,
-        "id": "created",
-        "name": "created",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": false
-        }
-      },
-      {
-        "system": false,
-        "id": "updated",
-        "name": "updated",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": true
-        }
       }
     ],
     "indexes": [
@@ -637,16 +338,6 @@ migrate((app) => {
     "type": "base",
     "system": false,
     "fields": [
-      {
-        "system": true,
-        "id": "id",
-        "name": "id",
-        "type": "id",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
       {
         "id": "q_course_id_fl",
         "name": "course_id",
@@ -702,32 +393,6 @@ migrate((app) => {
         "name": "answer_key",
         "type": "text",
         "options": {}
-      },
-      {
-        "system": false,
-        "id": "created",
-        "name": "created",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": false
-        }
-      },
-      {
-        "system": false,
-        "id": "updated",
-        "name": "updated",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": true
-        }
       }
     ],
     "indexes": [],
@@ -744,16 +409,6 @@ migrate((app) => {
     "type": "base",
     "system": false,
     "fields": [
-      {
-        "system": true,
-        "id": "id",
-        "name": "id",
-        "type": "id",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
       {
         "id": "s_course_id_fl",
         "name": "course_id",
@@ -778,32 +433,6 @@ migrate((app) => {
         "type": "text",
         "required": true,
         "options": {}
-      },
-      {
-        "system": false,
-        "id": "created",
-        "name": "created",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": false
-        }
-      },
-      {
-        "system": false,
-        "id": "updated",
-        "name": "updated",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": true
-        }
       }
     ],
     "indexes": [
@@ -822,16 +451,6 @@ migrate((app) => {
     "type": "base",
     "system": false,
     "fields": [
-      {
-        "system": true,
-        "id": "id",
-        "name": "id",
-        "type": "id",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {}
-      },
       {
         "id": "g_student_id_f",
         "name": "student_id",
@@ -859,32 +478,6 @@ migrate((app) => {
         "name": "score",
         "type": "number",
         "options": {}
-      },
-      {
-        "system": false,
-        "id": "created",
-        "name": "created",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": false
-        }
-      },
-      {
-        "system": false,
-        "id": "updated",
-        "name": "updated",
-        "type": "autodate",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "onCreate": true,
-          "onUpdate": true
-        }
       }
     ],
     "indexes": [
