@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { pb } from '../pb';
-import { 
-  Plus, Edit, Trash2, Lock, Unlock, BookOpen, 
-  User, Award, Layers, University, Calendar 
+import {
+  Plus, Edit, Trash2, Lock, Unlock, BookOpen,
+  User, Award, Layers, University, Calendar
 } from 'lucide-react';
 
-export default function Hierarchy({ 
+export default function Hierarchy({
   programs, terms, courses,
   currentProgId, setCurrentProgId,
   currentTermId, setCurrentTermId,
@@ -21,7 +21,7 @@ export default function Hierarchy({
   // Modal State for Courses
   const [isDersModalOpen, setIsDersModalOpen] = useState(false);
   const [selectedDers, setSelectedDers] = useState(null);
-  
+
   // Course Form Fields
   const [dersKodu, setDersKodu] = useState('');
   const [dersAdi, setDersAdi] = useState('');
@@ -88,7 +88,7 @@ export default function Hierarchy({
   const handleDeleteProgram = () => {
     if (!currentProgId) return;
     triggerConfirm(
-      "Programı Sil", 
+      "Programı Sil",
       "Bu programı ve buna bağlı tüm dersleri ve verileri silmek istediğinize emin misiniz?",
       async () => {
         try {
@@ -250,12 +250,12 @@ export default function Hierarchy({
           <label className="flex items-center gap-1.5 text-xs font-bold text-text-muted uppercase tracking-wider">
             <University size={14} /> AKTİF PROGRAM
           </label>
-          <select 
-            value={currentProgId || ''} 
+          <select
+            value={currentProgId || ''}
             onChange={(e) => {
               setCurrentProgId(e.target.value);
               setCurrentDersId(null);
-            }} 
+            }}
             disabled={progLocked}
             className="w-full mt-2 p-2.5 border border-border rounded-xl text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
           >
@@ -266,7 +266,7 @@ export default function Hierarchy({
             <button className="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 cursor-pointer transition-all flex items-center gap-1" onClick={handleEditProgram} disabled={!currentProgId}><Edit size={10} /> Düzenle</button>
             <button className="px-2.5 py-1 bg-danger hover:opacity-90 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1 shadow-sm shadow-danger/10" onClick={handleDeleteProgram} disabled={!currentProgId}><Trash2 size={10} /> Sil</button>
             <label className="text-[10px] flex items-center gap-1.5 cursor-pointer select-none text-text-muted hover:text-slate-800 transition-colors ml-2">
-              <input type="checkbox" checked={progLocked} onChange={(e) => setProgLocked(e.target.checked)} className="w-auto h-auto cursor-pointer" /> 
+              <input type="checkbox" checked={progLocked} onChange={(e) => setProgLocked(e.target.checked)} className="w-auto h-auto cursor-pointer" />
               {progLocked ? <Lock size={10} /> : <Unlock size={10} />} Kilitle
             </label>
           </div>
@@ -276,12 +276,12 @@ export default function Hierarchy({
           <label className="flex items-center gap-1.5 text-xs font-bold text-text-muted uppercase tracking-wider">
             <Calendar size={14} /> EĞİTİM YILI / DÖNEM
           </label>
-          <select 
-            value={currentTermId || ''} 
+          <select
+            value={currentTermId || ''}
             onChange={(e) => {
               setCurrentTermId(e.target.value);
               setCurrentDersId(null);
-            }} 
+            }}
             disabled={termLocked}
             className="w-full mt-2 p-2.5 border border-border rounded-xl text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
           >
@@ -292,7 +292,7 @@ export default function Hierarchy({
             <button className="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 cursor-pointer transition-all flex items-center gap-1" onClick={handleEditTerm} disabled={!currentTermId}><Edit size={10} /> Düzenle</button>
             <button className="px-2.5 py-1 bg-danger hover:opacity-90 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1 shadow-sm shadow-danger/10" onClick={handleDeleteTerm} disabled={!currentTermId}><Trash2 size={10} /> Sil</button>
             <label className="text-[10px] flex items-center gap-1.5 cursor-pointer select-none text-text-muted hover:text-slate-800 transition-colors ml-2">
-              <input type="checkbox" checked={termLocked} onChange={(e) => setTermLocked(e.target.checked)} className="w-auto h-auto cursor-pointer" /> 
+              <input type="checkbox" checked={termLocked} onChange={(e) => setTermLocked(e.target.checked)} className="w-auto h-auto cursor-pointer" />
               {termLocked ? <Lock size={10} /> : <Unlock size={10} />} Kilitle
             </label>
           </div>
@@ -302,9 +302,9 @@ export default function Hierarchy({
           <label className="flex items-center gap-1.5 text-xs font-bold text-text-muted uppercase tracking-wider">
             <BookOpen size={14} /> AKTİF DERS
           </label>
-          <select 
-            value={currentDersId || ''} 
-            onChange={(e) => setCurrentDersId(e.target.value)} 
+          <select
+            value={currentDersId || ''}
+            onChange={(e) => setCurrentDersId(e.target.value)}
             disabled={dersLocked || !currentProgId || !currentTermId}
             className="w-full mt-2 p-2.5 border border-border rounded-xl text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
           >
@@ -320,7 +320,7 @@ export default function Hierarchy({
             }} disabled={!currentDersId}><Edit size={10} /> Düzenle</button>
             <button className="px-2.5 py-1 bg-danger hover:opacity-90 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1 shadow-sm shadow-danger/10" onClick={handleDeleteCourse} disabled={!currentDersId}><Trash2 size={10} /> Sil</button>
             <label className="text-[10px] flex items-center gap-1.5 cursor-pointer select-none text-text-muted hover:text-slate-800 transition-colors ml-2">
-              <input type="checkbox" checked={dersLocked} onChange={(e) => setDersLocked(e.target.checked)} className="w-auto h-auto cursor-pointer" /> 
+              <input type="checkbox" checked={dersLocked} onChange={(e) => setDersLocked(e.target.checked)} className="w-auto h-auto cursor-pointer" />
               {dersLocked ? <Lock size={10} /> : <Unlock size={10} />} Kilitle
             </label>
           </div>
@@ -338,7 +338,7 @@ export default function Hierarchy({
         <h3 className="font-display m-0 mb-4 text-base font-bold text-p flex items-center gap-2 tracking-tight">
           <University size={18} /> Üniversite / Bölüm Hiyerarşisi
         </h3>
-        
+
         {!currentTermId ? (
           <div className="text-center p-8 text-text-muted border border-dashed border-border rounded-xl text-sm font-medium">
             Lütfen bir dönem seçiniz.
@@ -355,11 +355,11 @@ export default function Hierarchy({
                 <h4 className="m-0 font-bold text-p text-sm uppercase tracking-wider">{prog.name}</h4>
                 <span className="ml-auto text-xs text-text-muted font-medium">{prog.courses.length} ders</span>
               </div>
-              
+
               <div className="flex flex-col gap-3">
                 {prog.courses.map(c => (
-                  <div 
-                    key={c.id} 
+                  <div
+                    key={c.id}
                     className={`rounded-xl border p-3.5 cursor-pointer flex flex-col gap-1 transition-all duration-200 ${currentDersId === c.id ? 'border-s bg-s-light shadow-sm shadow-s/5' : 'border-slate-100 bg-slate-50/50 hover:bg-slate-50'}`}
                     onClick={() => setCurrentDersId(c.id)}
                   >
@@ -372,7 +372,7 @@ export default function Hierarchy({
                       )}
                       <span className="font-bold text-slate-800 text-sm">{c.name}</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-4.5 mt-1.5 flex-wrap">
                       {c.instructor && (
                         <span className="text-xs text-text-muted flex items-center gap-1 font-medium">
@@ -390,7 +390,7 @@ export default function Hierarchy({
                         </span>
                       )}
                     </div>
-                    
+
                     <div className="flex gap-1.5 flex-wrap mt-2">
                       {c.pct_vize > 0 && <span className="bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full text-[10px] font-bold">Vize %{c.pct_vize}</span>}
                       {c.pct_odev > 0 && <span className="bg-pink-100 text-pink-700 px-2.5 py-0.5 rounded-full text-[10px] font-bold">Ödev %{c.pct_odev}</span>}
@@ -431,7 +431,7 @@ export default function Hierarchy({
                 <input type="number" min="1" max="30" value={dersAKTS} onChange={(e) => setDersAKTS(e.target.value)} className="w-full px-3.5 py-2.5 border border-border rounded-lg text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200" />
               </div>
               <div className="flex-1 flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Dersi Veren Öğr. Elemanı</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Öğr. Elemanı</label>
                 <input type="text" value={dersVeren} onChange={(e) => setDersVeren(e.target.value)} placeholder="Dr. Öğr. Üyesi Ahmet Yılmaz" className="w-full px-3.5 py-2.5 border border-border rounded-lg text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200" />
               </div>
               <div className="flex-1 flex flex-col gap-1.5">
@@ -449,7 +449,7 @@ export default function Hierarchy({
 
             <hr className="border-none border-t border-slate-900/10 my-6" />
             <h4 className="text-xs font-bold text-s mb-4 uppercase tracking-wider">⚖️ Değerlendirme Yüzdeleri Ağırlığı</h4>
-            
+
             <div className="grid grid-cols-5 gap-3">
               <div className="flex flex-col gap-1.5 text-center">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Vize (%)</label>
@@ -475,12 +475,12 @@ export default function Hierarchy({
 
             <div className="mt-5 flex items-center gap-3 text-xs font-semibold">
               <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-300" 
-                  style={{ 
+                <div
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{
                     width: `${Math.min(totalPercentage, 100)}%`,
                     backgroundColor: totalPercentage === 100 ? 'var(--success)' : totalPercentage > 100 ? 'var(--danger)' : 'var(--warning)'
-                  }} 
+                  }}
                 />
               </div>
               <span className={totalPercentage === 100 ? 'text-success' : totalPercentage > 100 ? 'text-danger' : 'text-warning'}>
