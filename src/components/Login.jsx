@@ -26,32 +26,21 @@ export default function Login({ onLoginSuccess }) {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h2 className="login-title">MEDEK PRO</h2>
-        <p className="login-subtitle">Akademik Ölçme ve Değerlendirme Sistemi</p>
+    <div className="w-full h-screen flex justify-center items-center bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
+      <div className="w-[400px] p-10 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/10">
+        <h2 className="font-display font-extrabold text-slate-900 text-3xl text-center mb-1 tracking-tight">MEDEK PRO</h2>
+        <p className="text-text-muted text-xs text-center mb-8 font-medium">Akademik Ölçme ve Değerlendirme Sistemi</p>
         
         {error && (
-          <div style={{
-            background: 'rgba(239, 68, 68, 0.1)',
-            color: '#ef4444',
-            padding: '12px',
-            borderRadius: '8px',
-            fontSize: '0.8rem',
-            marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            border: '1px solid rgba(239, 68, 68, 0.2)'
-          }}>
-            <AlertCircle size={16} />
+          <div className="bg-danger/10 text-danger p-3.5 rounded-xl text-xs mb-5 flex items-center gap-2 border border-danger/20">
+            <AlertCircle size={16} className="shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label htmlFor="email" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="email" className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
               <Mail size={12} /> E-posta / Kullanıcı Adı
             </label>
             <input
@@ -61,11 +50,12 @@ export default function Login({ onLoginSuccess }) {
               placeholder="admin@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3.5 py-2.5 border border-border rounded-lg text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200"
             />
           </div>
 
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label htmlFor="password" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="password" className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
               <Key size={12} /> Şifre
             </label>
             <input
@@ -75,14 +65,14 @@ export default function Login({ onLoginSuccess }) {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3.5 py-2.5 border border-border rounded-lg text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200"
             />
           </div>
 
           <button
             type="submit"
-            className="btn btn-primary"
             disabled={loading}
-            style={{ width: '100%', padding: '12px', marginTop: '10px' }}
+            className="w-full px-4 py-3 mt-2 bg-s hover:bg-p-hover text-white rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 shadow-md shadow-s/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Giriş Yapılıyor...' : (
               <>

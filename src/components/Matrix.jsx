@@ -83,57 +83,57 @@ export default function Matrix({ currentProgId, currentDersId, addLog }) {
   };
 
   return (
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h3 className="card-title" style={{ margin: 0 }}>
+    <div className="bg-white p-6 rounded-2xl border border-border shadow-sm hover:shadow-md transition-all duration-200">
+      <div className="flex justify-between items-center mb-5">
+        <h3 className="font-display m-0 text-base font-bold text-p flex items-center gap-2 tracking-tight">
           <Grid3X3 size={18} /> PÇ - DÇ İlişki Matrisi
         </h3>
         {currentDersId && (
-          <button className="btn btn-secondary btn-sm" onClick={fetchMatrix} disabled={loading}>
-            <RefreshCw size={12} className={loading ? 'fa-spin' : ''} /> Yenile
+          <button className="px-2.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 cursor-pointer transition-all flex items-center gap-1" onClick={fetchMatrix} disabled={loading}>
+            <RefreshCw size={12} className={loading ? 'animate-spin' : ''} /> Yenile
           </button>
         )}
       </div>
 
       {!currentDersId ? (
-        <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
+        <div className="text-center p-8 text-text-muted border border-dashed border-border rounded-xl text-sm font-medium">
           Lütfen üst menüden bir Ders seçiniz.
         </div>
       ) : loading ? (
-        <div style={{ textAlign: 'center', padding: '20px' }}>Yükleniyor...</div>
+        <div className="text-center p-8 text-text-muted text-sm font-medium">Yükleniyor...</div>
       ) : dcs.length === 0 || pcs.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
+        <div className="text-center p-8 text-text-muted border border-dashed border-border rounded-xl text-sm font-medium">
           Matris tablosu oluşturulamadı. Lütfen hem Program Çıktılarını (PÇ) hem de Ders Çıktılarını (DÇ) tanımladığınızdan emin olun.
         </div>
       ) : (
-        <div className="table-container">
-          <table>
+        <div className="overflow-x-auto border border-border rounded-xl bg-white mt-4">
+          <table className="w-full border-collapse text-left">
             <thead>
-              <tr>
-                <th>DÇ / PÇ</th>
+              <tr className="border-b border-border bg-slate-50/50">
+                <th className="px-4 py-3 text-xs font-bold text-text-muted uppercase tracking-wider min-w-[200px] sm:min-w-[300px]">DÇ / PÇ</th>
                 {pcs.map(pc => (
-                  <th key={pc.id} style={{ textAlign: 'center', minWidth: '70px' }}>{pc.code}</th>
+                  <th key={pc.id} className="px-4 py-3 text-xs font-bold text-text-muted uppercase tracking-wider min-w-[70px] text-center">{pc.code}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {dcs.map(dc => (
-                <tr key={dc.id}>
-                  <td>
-                    <div style={{ fontWeight: 'bold' }}>{dc.code}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 'normal', maxWidth: '300px' }}>
+                <tr key={dc.id} className="border-b border-border last:border-0 hover:bg-slate-50/20">
+                  <td className="px-4 py-3">
+                    <div className="font-bold text-slate-800 text-sm">{dc.code}</div>
+                    <div className="text-xs text-text-muted font-normal mt-0.5 max-w-[400px]">
                       {dc.description}
                     </div>
                   </td>
                   {pcs.map(pc => (
-                    <td key={pc.id} style={{ textAlign: 'center' }}>
+                    <td key={pc.id} className="px-4 py-3 text-center">
                       <input
                         type="number"
                         min="0"
                         max="5"
-                        style={{ width: '60px', textAlign: 'center', padding: '6px' }}
                         value={getCellVal(dc.code, pc.code)}
                         onChange={(e) => handleValueChange(dc.code, pc.code, e.target.value)}
+                        className="w-14 text-center px-1.5 py-1 border border-border rounded-lg text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 font-bold mx-auto block"
                       />
                     </td>
                   ))}

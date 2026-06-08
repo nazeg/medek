@@ -14,7 +14,7 @@ import {
   Legend
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { FileText, Download, BarChart2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Download, BarChart2, AlertCircle, RefreshCw } from 'lucide-react';
 
 ChartJS.register(
   CategoryScale,
@@ -419,7 +419,6 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
 
     addLog("PDF raporu hazırlanıyor, lütfen bekleyin...");
     
-    // Inject local scripts via standard html2pdf or run directly
     if (window.html2pdf) {
       window.html2pdf().set(opt).from(element).save().then(() => {
         document.body.classList.remove('pdf-mode');
@@ -429,7 +428,6 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
         console.error(err);
       });
     } else {
-      // Fallback
       alert("PDF motoru yükleniyor. Lütfen tekrar deneyin.");
       const script = document.createElement('script');
       script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
@@ -443,37 +441,37 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
   const getSuccessBg = (val) => val >= 70 ? '#d1fae5' : val >= 50 ? '#fef3c7' : '#fee2e2';
 
   return (
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h3 className="card-title" style={{ margin: 0 }}>
+    <div className="bg-white p-6 rounded-2xl border border-border shadow-sm hover:shadow-md transition-all duration-200">
+      <div className="flex justify-between items-center mb-5">
+        <h3 className="font-display m-0 text-base font-bold text-p flex items-center gap-2 tracking-tight">
           <BarChart2 size={18} /> MEDEK Analiz Raporları
         </h3>
         {analysisResult && !analysisResult.error && (
-          <button className="btn btn-primary btn-sm" onClick={handleExportPDF}>
-            <Download size={12} /> PDF İndir
+          <button className="px-3.5 py-2 bg-s hover:bg-p-hover text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-md shadow-s/10" onClick={handleExportPDF}>
+            <Download size={12} /> PDF Rapor İndir
           </button>
         )}
       </div>
 
       {!currentDersId ? (
-        <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
+        <div className="text-center p-8 text-text-muted border border-dashed border-border rounded-xl text-sm font-medium">
           Lütfen üst menüden bir Ders seçiniz.
         </div>
       ) : loading ? (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-          <RefreshCw className="fa-spin" size={18} /> Veriler hesaplanıyor...
+        <div className="text-center p-8 text-text-muted text-sm font-medium flex items-center justify-center gap-2">
+          <RefreshCw className="animate-spin" size={18} /> Veriler hesaplanıyor...
         </div>
       ) : (
         <>
           {/* Filters Grid */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px' }}>
+          <div className="flex flex-col gap-4 mb-6">
             <div>
-              <h5 style={{ color: 'var(--s)', margin: '0 0 8px 0', fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase' }}>📊 Tekil Sınav Analizleri</h5>
-              <div className="analiz-grid">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 block">📊 Tekil Sınav Analizleri</span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
                 {['Vize', 'Final', 'Ödev', 'Uygulama', 'Bütünleme'].map(mod => (
                   <button
                     key={mod}
-                    className={`btn btn-sm ${activeMod === mod ? 'btn-primary' : 'btn-secondary'}`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all ${activeMod === mod ? 'bg-s text-white shadow-md shadow-s/10' : 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-700'}`}
                     onClick={() => setActiveMod(mod)}
                   >
                     {mod}
@@ -483,8 +481,8 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
             </div>
 
             <div>
-              <h5 style={{ color: 'var(--success)', margin: '0 0 8px 0', fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase' }}>🔄 Sınav Kombinasyonları</h5>
-              <div className="analiz-grid">
+              <span className="text-xs font-bold text-success uppercase tracking-wider mb-2.5 block">🔄 Sınav Kombinasyonları</span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
                 {[
                   { id: 'VizeFinal', label: 'Vize + Final' },
                   { id: 'ÖdevFinal', label: 'Ödev + Final' },
@@ -495,8 +493,7 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                 ].map(item => (
                   <button
                     key={item.id}
-                    className={`btn btn-sm ${activeMod === item.id ? 'btn-success' : 'btn-secondary'}`}
-                    style={{ background: activeMod === item.id ? 'var(--success)' : '' }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all ${activeMod === item.id ? 'bg-success text-white shadow-md shadow-success/10' : 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-700'}`}
                     onClick={() => setActiveMod(item.id)}
                   >
                     {item.label}
@@ -506,8 +503,8 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
             </div>
 
             <div>
-              <h5 style={{ color: 'var(--warning)', margin: '0 0 8px 0', fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase' }}>🕒 Bütünleme Kombinasyonları</h5>
-              <div className="analiz-grid">
+              <span className="text-xs font-bold text-warning uppercase tracking-wider mb-2.5 block">🕒 Bütünleme Kombinasyonları</span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
                 {[
                   { id: 'VizeBüt', label: 'Vize + Büt' },
                   { id: 'ÖdevBüt', label: 'Ödev + Büt' },
@@ -518,8 +515,7 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                 ].map(item => (
                   <button
                     key={item.id}
-                    className={`btn btn-sm ${activeMod === item.id ? 'btn-warning' : 'btn-secondary'}`}
-                    style={{ background: activeMod === item.id ? 'var(--warning)' : '', color: activeMod === item.id ? 'white' : '' }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all ${activeMod === item.id ? 'bg-warning text-white shadow-md shadow-warning/10' : 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-700'}`}
                     onClick={() => setActiveMod(item.id)}
                   >
                     {item.label}
@@ -532,37 +528,27 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
           {/* Results Area */}
           {analysisResult && (
             analysisResult.error ? (
-              <div style={{
-                background: 'rgba(239, 68, 68, 0.1)',
-                color: '#ef4444',
-                padding: '16px',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '12px',
-                border: '1px solid rgba(239, 68, 68, 0.2)',
-                fontSize: '0.85rem'
-              }}>
-                <AlertCircle size={20} style={{ flexShrink: 0 }} />
+              <div className="bg-danger/10 text-danger p-4 rounded-xl text-sm mb-5 flex items-start gap-3 border border-danger/20 font-medium">
+                <AlertCircle size={20} className="shrink-0" />
                 <div>{analysisResult.error}</div>
               </div>
             ) : (
-              <div id="pdf-export-area" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div id="pdf-export-area" className="flex flex-col gap-6">
                 
                 {/* PDF Header (Only visible in PDF mode) */}
-                <div id="pdf-header" style={{ borderBottom: '2px solid var(--border)', paddingBottom: '12px', display: 'none' }}>
-                  <h2 style={{ margin: 0, fontFamily: 'Outfit, sans-serif', fontSize: '1.4rem' }}>{program?.name}</h2>
-                  <h3 style={{ margin: '4px 0 0 0', color: 'var(--text-muted)', fontSize: '1.1rem' }}>
+                <div id="pdf-header" className="border-b-2 border-border pb-3 mb-4 hidden print:block">
+                  <h2 className="margin-0 font-display text-xl font-extrabold text-slate-900 tracking-tight">{program?.name}</h2>
+                  <h3 className="margin-0 mt-1 text-sm font-bold text-text-muted">
                     {course?.code} - {course?.name} ({term?.name})
                   </h3>
-                  <h4 style={{ margin: '4px 0 0 0', color: 'var(--s)', fontSize: '0.9rem' }}>Değerlendirme Sınav Modu: {activeMod}</h4>
+                  <h4 className="margin-0 mt-1 text-xs text-s font-semibold">Değerlendirme Sınav Modu: {activeMod}</h4>
                 </div>
 
                 {/* Graphs Row */}
-                <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-                  <div style={{ flex: '1.5', minWidth: '350px' }} className="card">
-                    <h4 className="card-title">📊 Ders Öğrenme Çıktıları (DÇ) Başarı Oranları</h4>
-                    <div style={{ height: '300px', position: 'relative' }}>
+                <div className="flex gap-5 flex-col lg:flex-row">
+                  <div className="flex-[1.5] min-w-[320px] bg-white p-6 rounded-2xl border border-border shadow-sm">
+                    <h4 className="font-display m-0 mb-4 text-sm font-bold text-p tracking-tight">📊 Ders Öğrenme Çıktıları (DÇ) Başarı Oranları</h4>
+                    <div className="h-[280px] relative">
                       <Bar
                         data={{
                           labels: analysisResult.dcLabels,
@@ -582,7 +568,7 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                               anchor: 'end',
                               align: 'top',
                               formatter: (val) => val + '%',
-                              font: { weight: 'bold', size: 10 },
+                              font: { weight: 'bold', size: 9 },
                               color: 'var(--p)'
                             }
                           },
@@ -592,9 +578,9 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                     </div>
                   </div>
 
-                  <div style={{ flex: '1', minWidth: '280px' }} className="card">
-                    <h4 className="card-title">🕸️ Program Çıktıları (PÇ) Sağlanma Oranları</h4>
-                    <div style={{ height: '300px', position: 'relative' }}>
+                  <div className="flex-1 min-w-[280px] bg-white p-6 rounded-2xl border border-border shadow-sm">
+                    <h4 className="font-display m-0 mb-4 text-sm font-bold text-p tracking-tight">🕸️ Program Çıktıları (PÇ) Sağlanma Oranları</h4>
+                    <div className="h-[280px] relative">
                       <Radar
                         data={{
                           labels: analysisResult.pcLabels,
@@ -602,7 +588,7 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                             label: '% Sağlanma',
                             data: analysisResult.pcData,
                             borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
                             pointBackgroundColor: '#10b981',
                             fill: true
                           }]
@@ -619,33 +605,28 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                 </div>
 
                 {/* Outcomes Grid Table */}
-                <div className="card">
-                  <h4 className="card-title">🎓 Öğrenci Kazanım Özeti ({activeMod})</h4>
-                  <div className="table-container">
-                    <table>
+                <div className="bg-white p-6 rounded-2xl border border-border shadow-sm">
+                  <h4 className="font-display m-0 mb-3 text-sm font-bold text-p tracking-tight">🎓 Öğrenci Kazanım Özeti ({activeMod})</h4>
+                  <div className="overflow-x-auto border border-border rounded-xl bg-white">
+                    <table className="w-full border-collapse text-left">
                       <thead>
-                        <tr>
-                          <th>Öğrenci</th>
-                          {dcs.map(d => <th key={d.id} style={{ textAlign: 'center' }}>{d.code} (%)</th>)}
-                          {pcs.map(p => <th key={p.id} style={{ textAlign: 'center', background: '#f8fafc' }}>{p.code} (%)</th>)}
+                        <tr className="border-b border-border bg-slate-50/50">
+                          <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider min-w-[150px]">Öğrenci</th>
+                          {dcs.map(d => <th key={d.id} className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider text-center w-[85px]">{d.code} (%)</th>)}
+                          {pcs.map(p => <th key={p.id} className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider text-center w-[85px] bg-slate-100/30">{p.code} (%)</th>)}
                         </tr>
                       </thead>
                       <tbody>
                         {students.map(o => (
-                          <tr key={o.id}>
-                            <td>
-                              <div style={{ fontWeight: 'bold' }}>{o.student_no}</div>
-                              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{o.full_name}</div>
+                          <tr key={o.id} className="border-b border-border last:border-0 hover:bg-slate-50/20">
+                            <td className="px-3 py-2.5">
+                              <div className="font-bold text-slate-800 text-xs">{o.student_no}</div>
+                              <div className="text-[10px] text-text-muted font-medium mt-0.5">{o.full_name}</div>
                             </td>
                             {dcs.map(d => {
                               const val = analysisResult.studentDCOutcomes[o.id]?.[d.code] || 0;
                               return (
-                                <td key={d.id} style={{
-                                  textAlign: 'center',
-                                  fontWeight: 'bold',
-                                  color: 'white',
-                                  backgroundColor: getSuccessColor(val)
-                                }}>
+                                <td key={d.id} className="px-3 py-2.5 text-center font-bold text-xs text-white" style={{ backgroundColor: getSuccessColor(val) }}>
                                   {val.toFixed(1)}%
                                 </td>
                               );
@@ -653,11 +634,7 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                             {pcs.map(p => {
                               const val = analysisResult.studentPCOutcomes[o.id]?.[p.code] || 0;
                               return (
-                                <td key={p.id} style={{
-                                  textAlign: 'center',
-                                  fontWeight: 'bold',
-                                  backgroundColor: '#f1f5f9'
-                                }}>
+                                <td key={p.id} className="px-3 py-2.5 text-center font-bold text-xs bg-slate-50 text-slate-700">
                                   {val.toFixed(1)}%
                                 </td>
                               );
@@ -670,49 +647,41 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                 </div>
 
                 {/* Performance Summary (Combo vs Questions details) */}
-                <div className="card">
-                  <h4 className="card-title">🧑‍🎓 Öğrenci Bazlı Başarı Özeti ({activeMod})</h4>
+                <div className="bg-white p-6 rounded-2xl border border-border shadow-sm">
+                  <h4 className="font-display m-0 mb-3 text-sm font-bold text-p tracking-tight">🧑‍🎓 Öğrenci Bazlı Başarı Özeti ({activeMod})</h4>
                   
                   {analysisResult.isCombo ? (
-                    /* Combo view: weights summary */
                     <div>
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                      <div className="flex gap-1.5 flex-wrap mb-3">
                         {analysisResult.reqExams.map(et => (
-                          <span key={et} style={{
-                            background: '#eff6ff',
-                            color: 'var(--s)',
-                            padding: '4px 12px',
-                            borderRadius: '20px',
-                            fontSize: '0.75rem',
-                            fontWeight: 'bold'
-                          }}>
+                          <span key={et} className="bg-blue-50 text-s px-3 py-1 rounded-full text-[10px] font-bold border border-blue-100">
                             {et}: %{analysisResult.pctMap[et]} etki
                           </span>
                         ))}
                       </div>
 
-                      <div className="table-container">
-                        <table>
+                      <div className="overflow-x-auto border border-border rounded-xl bg-white">
+                        <table className="w-full border-collapse text-left">
                           <thead>
-                            <tr>
-                              <th>No</th>
-                              <th>Ad Soyad</th>
+                            <tr className="border-b border-border bg-slate-50/50">
+                              <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[120px]">No</th>
+                              <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider min-w-[150px]">Ad Soyad</th>
                               {analysisResult.reqExams.map(et => (
                                 <React.Fragment key={et}>
-                                  <th style={{ textAlign: 'center' }}>{et} (100)</th>
-                                  <th style={{ textAlign: 'center', background: '#f8fafc' }}>{et} (%{analysisResult.pctMap[et]})</th>
+                                  <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider text-center w-[95px]">{et} (100)</th>
+                                  <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider text-center w-[95px] bg-slate-100/30">{et} (%{analysisResult.pctMap[et]})</th>
                                 </React.Fragment>
                               ))}
-                              <th style={{ textAlign: 'center', background: '#e0f2fe', fontWeight: 'bold' }}>Ağırlıklı Not</th>
+                              <th className="px-3 py-3 text-xs font-bold text-sky-900 uppercase tracking-wider text-center w-[110px] bg-sky-50">Ağırlıklı Not</th>
                             </tr>
                           </thead>
                           <tbody>
                             {students.map(o => {
                               let weightedTotal = 0;
                               return (
-                                <tr key={o.id}>
-                                  <td><b>{o.student_no}</b></td>
-                                  <td>{o.full_name}</td>
+                                <tr key={o.id} className="border-b border-border last:border-0 hover:bg-slate-50/20">
+                                  <td className="px-3 py-2.5 font-bold text-xs text-slate-800">{o.student_no}</td>
+                                  <td className="px-3 py-2.5 text-xs font-medium text-slate-700">{o.full_name}</td>
                                   {analysisResult.reqExams.map(et => {
                                     const examQs = analysisResult.filteredSorular.filter(q => q.exam_type === et);
                                     const examMax = examQs.reduce((sum, q) => sum + (parseFloat(q.max_score) || 0), 0);
@@ -729,21 +698,16 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
 
                                     return (
                                       <React.Fragment key={et}>
-                                        <td style={{ textAlign: 'center', color: getSuccessColor(percentVal), fontWeight: 'bold' }}>
+                                        <td className="px-3 py-2.5 text-center font-bold text-xs" style={{ color: getSuccessColor(percentVal) }}>
                                           {percentVal.toFixed(1)}
                                         </td>
-                                        <td style={{ textAlign: 'center', color: 'var(--text-muted)', background: '#f8fafc' }}>
+                                        <td className="px-3 py-2.5 text-center text-xs text-text-muted bg-slate-50/50">
                                           {weightContrib.toFixed(1)}
                                         </td>
                                       </React.Fragment>
                                     );
                                   })}
-                                  <td style={{
-                                    textAlign: 'center',
-                                    fontWeight: 'bold',
-                                    color: 'white',
-                                    backgroundColor: getSuccessColor(weightedTotal)
-                                  }}>
+                                  <td className="px-3 py-2.5 text-center font-bold text-xs text-white" style={{ backgroundColor: getSuccessColor(weightedTotal) }}>
                                     {weightedTotal.toFixed(1)}
                                   </td>
                                 </tr>
@@ -754,32 +718,31 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                       </div>
                     </div>
                   ) : (
-                    /* Single exam view: question scores matrix */
-                    <div className="table-container">
-                      <table>
+                    <div className="overflow-x-auto border border-border rounded-xl bg-white">
+                      <table className="w-full border-collapse text-left">
                         <thead>
-                          <tr>
-                            <th>No</th>
-                            <th>Ad Soyad</th>
+                          <tr className="border-b border-border bg-slate-50/50">
+                            <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[120px]">No</th>
+                            <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider min-w-[150px]">Ad Soyad</th>
                             {analysisResult.filteredSorular.map(q => (
-                              <th key={q.id} style={{ textAlign: 'center' }}>
+                              <th key={q.id} className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider text-center w-[85px]">
                                 {q.code}<br />
-                                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 'normal' }}>
+                                <span className="text-[10px] text-text-muted font-normal">
                                   ({q.max_score}p)
                                 </span>
                               </th>
                             ))}
-                            <th style={{ textAlign: 'center', background: '#f8fafc' }}>Toplam</th>
-                            <th style={{ textAlign: 'center', background: '#e0f2fe' }}>Başarı (%)</th>
+                            <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider text-center w-[95px] bg-slate-100/30">Toplam</th>
+                            <th className="px-3 py-3 text-xs font-bold text-sky-900 uppercase tracking-wider text-center w-[95px] bg-sky-50">Başarı (%)</th>
                           </tr>
                         </thead>
                         <tbody>
                           {students.map(o => {
                             let totalObtained = 0;
                             return (
-                              <tr key={o.id}>
-                                <td><b>{o.student_no}</b></td>
-                                <td>{o.full_name}</td>
+                              <tr key={o.id} className="border-b border-border last:border-0 hover:bg-slate-50/20">
+                                <td className="px-3 py-2.5 font-bold text-xs text-slate-800">{o.student_no}</td>
+                                <td className="px-3 py-2.5 text-xs font-medium text-slate-700">{o.full_name}</td>
                                 {analysisResult.filteredSorular.map(q => {
                                   const g = grades.find(gr => gr.student_id === o.id && gr.question_id === q.id);
                                   const score = calculateScore(q, g);
@@ -801,25 +764,15 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                                   }
 
                                   return (
-                                    <td key={q.id} style={{
-                                      textAlign: 'center',
-                                      fontWeight: 'bold',
-                                      backgroundColor: cellBg,
-                                      color: cellColor
-                                    }}>
+                                    <td key={q.id} className="px-3 py-2.5 text-center font-bold text-xs" style={{ backgroundColor: cellBg, color: cellColor }}>
                                       {answerLabel}
                                     </td>
                                   );
                                 })}
-                                <td style={{ textAlign: 'center', fontWeight: 'bold', background: '#f8fafc' }}>
+                                <td className="px-3 py-2.5 text-center font-bold text-xs text-slate-800 bg-slate-50">
                                   {totalObtained.toFixed(1)} / {analysisResult.modMaxScore}
                                 </td>
-                                <td style={{
-                                  textAlign: 'center',
-                                  fontWeight: 'bold',
-                                  color: 'white',
-                                  backgroundColor: getSuccessColor(analysisResult.modMaxScore > 0 ? (totalObtained / analysisResult.modMaxScore) * 100 : 0)
-                                }}>
+                                <td className="px-3 py-2.5 text-center font-bold text-xs text-white" style={{ backgroundColor: getSuccessColor(analysisResult.modMaxScore > 0 ? (totalObtained / analysisResult.modMaxScore) * 100 : 0) }}>
                                   {(analysisResult.modMaxScore > 0 ? (totalObtained / analysisResult.modMaxScore) * 100 : 0).toFixed(1)}%
                                 </td>
                               </tr>
@@ -832,52 +785,52 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
                 </div>
 
                 {/* Extremes (Easiest / Hardest Questions & Students) */}
-                <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                <div className="flex gap-5 flex-col md:flex-row">
                   
                   {/* Students stats */}
-                  <div style={{ flex: 1, minWidth: '280px' }} className="card">
-                    <h4 className="card-title">📉/🏆 Öğrenci Başarı Sıralaması</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div className="flex-1 min-w-[280px] bg-white p-6 rounded-2xl border border-border shadow-sm">
+                    <h4 className="font-display m-0 mb-4 text-sm font-bold text-p tracking-tight">📉/🏆 Öğrenci Başarı Sıralaması</h4>
+                    <div className="flex flex-col gap-4">
                       
-                      <div style={{ borderLeft: '4px solid #ef4444', paddingLeft: '10px' }}>
-                        <h5 style={{ margin: '0 0 4px 0', fontSize: '0.8rem', color: '#ef4444' }}>En Düşük Skorlar</h5>
-                        <table style={{ fontSize: '0.75rem' }}>
+                      <div className="border-l-4 border-danger pl-3">
+                        <span className="text-xs font-bold text-danger uppercase tracking-wider mb-1.5 block">En Düşük Skorlar</span>
+                        <table className="w-full text-xs font-medium text-slate-700">
                           <tbody>
                             {analysisResult.enDusukOgrenciler.map((o, idx) => (
-                              <tr key={idx}>
-                                <td><b>{o.no}</b></td>
-                                <td>{o.isim}</td>
-                                <td style={{ color: '#ef4444', fontWeight: 'bold' }}>{o.etiket}</td>
+                              <tr key={idx} className="border-b border-slate-100 last:border-0">
+                                <td className="py-1"><b>{o.no}</b></td>
+                                <td className="py-1">{o.isim}</td>
+                                <td className="py-1 text-right font-bold text-danger">{o.etiket}</td>
                               </tr>
                             ))}
                           </tbody>
                         </table>
                       </div>
 
-                      <div style={{ borderLeft: '4px solid #f59e0b', paddingLeft: '10px' }}>
-                        <h5 style={{ margin: '0 0 4px 0', fontSize: '0.8rem', color: '#f59e0b' }}>Orta Seviye (Medyan)</h5>
-                        <table style={{ fontSize: '0.75rem' }}>
+                      <div className="border-l-4 border-warning pl-3">
+                        <span className="text-xs font-bold text-warning uppercase tracking-wider mb-1.5 block">Orta Seviye (Medyan)</span>
+                        <table className="w-full text-xs font-medium text-slate-700">
                           <tbody>
                             {analysisResult.medyanOgrenciler.map((o, idx) => (
-                              <tr key={idx}>
-                                <td><b>{o.no}</b></td>
-                                <td>{o.isim}</td>
-                                <td style={{ color: '#f59e0b', fontWeight: 'bold' }}>{o.etiket}</td>
+                              <tr key={idx} className="border-b border-slate-100 last:border-0">
+                                <td className="py-1"><b>{o.no}</b></td>
+                                <td className="py-1">{o.isim}</td>
+                                <td className="py-1 text-right font-bold text-warning">{o.etiket}</td>
                               </tr>
                             ))}
                           </tbody>
                         </table>
                       </div>
 
-                      <div style={{ borderLeft: '4px solid #10b981', paddingLeft: '10px' }}>
-                        <h5 style={{ margin: '0 0 4px 0', fontSize: '0.8rem', color: '#10b981' }}>En Yüksek Skorlar</h5>
-                        <table style={{ fontSize: '0.75rem' }}>
+                      <div className="border-l-4 border-success pl-3">
+                        <span className="text-xs font-bold text-success uppercase tracking-wider mb-1.5 block">En Yüksek Skorlar</span>
+                        <table className="w-full text-xs font-medium text-slate-700">
                           <tbody>
                             {analysisResult.enYuksekOgrenciler.map((o, idx) => (
-                              <tr key={idx}>
-                                <td><b>{o.no}</b></td>
-                                <td>{o.isim}</td>
-                                <td style={{ color: '#10b981', fontWeight: 'bold' }}>{o.etiket}</td>
+                              <tr key={idx} className="border-b border-slate-100 last:border-0">
+                                <td className="py-1"><b>{o.no}</b></td>
+                                <td className="py-1">{o.isim}</td>
+                                <td className="py-1 text-right font-bold text-success">{o.etiket}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -889,34 +842,34 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
 
                   {/* Questions stats (only for single exam mode) */}
                   {!analysisResult.isCombo && (
-                    <div style={{ flex: 1, minWidth: '280px' }} className="card">
-                      <h4 className="card-title">🎯 Soru Başarı Sıralaması</h4>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div className="flex-1 min-w-[280px] bg-white p-6 rounded-2xl border border-border shadow-sm">
+                      <h4 className="font-display m-0 mb-4 text-sm font-bold text-p tracking-tight">🎯 Soru Başarı Sıralaması</h4>
+                      <div className="flex flex-col gap-4">
                         
-                        <div style={{ borderLeft: '4px solid #ef4444', paddingLeft: '10px' }}>
-                          <h5 style={{ margin: '0 0 4px 0', fontSize: '0.8rem', color: '#ef4444' }}>En Çok Hatalı / Boş Bırakılan Sorular</h5>
-                          <table style={{ fontSize: '0.75rem' }}>
+                        <div className="border-l-4 border-danger pl-3">
+                          <span className="text-xs font-bold text-danger uppercase tracking-wider mb-1.5 block">En Çok Hatalı / Boş Sorular</span>
+                          <table className="w-full text-xs font-medium text-slate-700">
                             <tbody>
                               {analysisResult.enZorSorular.map((s, idx) => (
-                                <tr key={idx}>
-                                  <td><b>{s.code}</b></td>
-                                  <td style={{ color: '#64748b' }}>{s.desc ? s.desc.substring(0, 40) + '...' : '-'}</td>
-                                  <td style={{ color: '#ef4444', fontWeight: 'bold' }}>{s.yuzde.toFixed(1)}%</td>
+                                <tr key={idx} className="border-b border-slate-100 last:border-0">
+                                  <td className="py-1"><b>{s.code}</b></td>
+                                  <td className="py-1 text-text-muted truncate max-w-[150px]">{s.desc || '-'}</td>
+                                  <td className="py-1 text-right font-bold text-danger">{s.yuzde.toFixed(1)}%</td>
                                 </tr>
                               ))}
                             </tbody>
                           </table>
                         </div>
 
-                        <div style={{ borderLeft: '4px solid #10b981', paddingLeft: '10px' }}>
-                          <h5 style={{ margin: '0 0 4px 0', fontSize: '0.8rem', color: '#10b981' }}>En Çok Doğru Yanıtlanan Sorular</h5>
-                          <table style={{ fontSize: '0.75rem' }}>
+                        <div className="border-l-4 border-success pl-3">
+                          <span className="text-xs font-bold text-success uppercase tracking-wider mb-1.5 block">En Çok Doğru Yanıtlanan Sorular</span>
+                          <table className="w-full text-xs font-medium text-slate-700">
                             <tbody>
                               {analysisResult.enKolaySorular.map((s, idx) => (
-                                <tr key={idx}>
-                                  <td><b>{s.code}</b></td>
-                                  <td style={{ color: '#64748b' }}>{s.desc ? s.desc.substring(0, 40) + '...' : '-'}</td>
-                                  <td style={{ color: '#10b981', fontWeight: 'bold' }}>{s.yuzde.toFixed(1)}%</td>
+                                <tr key={idx} className="border-b border-slate-100 last:border-0">
+                                  <td className="py-1"><b>{s.code}</b></td>
+                                  <td className="py-1 text-text-muted truncate max-w-[150px]">{s.desc || '-'}</td>
+                                  <td className="py-1 text-right font-bold text-success">{s.yuzde.toFixed(1)}%</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -930,97 +883,70 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog }) 
 
                 {/* Bloom Difficulty Analysis (Only for single exam mode) */}
                 {!analysisResult.isCombo && (
-                  <div className="card">
-                    <h4 className="card-title">🎯 Soru Zorluk Analizi — Bloom Taksonomisi</h4>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  <div className="bg-white p-6 rounded-2xl border border-border shadow-sm">
+                    <h4 className="font-display m-0 mb-3 text-sm font-bold text-p tracking-tight">🎯 Soru Zorluk Analizi — Bloom Taksonomisi</h4>
+                    <div className="flex gap-2 flex-wrap mb-4 text-xs text-text-muted font-medium items-center">
                       <span>Zorluk Dağılım Hedefleri:</span>
-                      <span style={{ background: '#d1fae5', color: '#065f46', padding: '2px 10px', borderRadius: '20px', fontWeight: 'bold' }}>Kolay %20</span>
-                      <span style={{ background: '#fef3c7', color: '#92400e', padding: '2px 10px', borderRadius: '20px', fontWeight: 'bold' }}>Orta %60</span>
-                      <span style={{ background: '#fee2e2', color: '#991b1b', padding: '2px 10px', borderRadius: '20px', fontWeight: 'bold' }}>Zor %20</span>
+                      <span className="bg-green-100 text-green-800 px-2.5 py-0.5 rounded-full font-bold">Kolay %20</span>
+                      <span className="bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full font-bold">Orta %60</span>
+                      <span className="bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full font-bold">Zor %20</span>
                     </div>
 
-                    <div className="table-container">
-                      <table>
+                    <div className="overflow-x-auto border border-border rounded-xl bg-white">
+                      <table className="w-full border-collapse text-left">
                         <thead>
-                          <tr>
-                            <th style={{ background: '#fee2e2', color: '#991b1b', textAlign: 'center' }}>Zor (0% - 20%) — Hedef %20</th>
-                            <th style={{ background: '#fef3c7', color: '#92400e', textAlign: 'center' }}>Orta (20% - 80%) — Hedef %60</th>
-                            <th style={{ background: '#d1fae5', color: '#065f46', textAlign: 'center' }}>Kolay (80% - 100%) — Hedef %20</th>
+                          <tr className="border-b border-border bg-slate-50/50">
+                            <th className="px-3 py-3 text-xs font-bold text-red-900 uppercase tracking-wider text-center bg-red-50/30 w-1/3">Zor (0% - 20%) — Hedef %20</th>
+                            <th className="px-3 py-3 text-xs font-bold text-amber-900 uppercase tracking-wider text-center bg-amber-50/30 w-1/3">Orta (20% - 80%) — Hedef %60</th>
+                            <th className="px-3 py-3 text-xs font-bold text-green-900 uppercase tracking-wider text-center bg-green-50/30 w-1/3">Kolay (80% - 100%) — Hedef %20</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td style={{ textAlign: 'center', verticalAlign: 'top', padding: '12px' }}>
+                          <tr className="border-b border-border last:border-0">
+                            <td className="px-3 py-4 text-center align-top min-h-[80px]">
                               {analysisResult.zor.length > 0 ? (
                                 analysisResult.zor.map(s => (
-                                  <span key={s.id} style={{
-                                    background: '#ef4444',
-                                    color: 'white',
-                                    padding: '4px 8px',
-                                    borderRadius: '4px',
-                                    margin: '2px',
-                                    display: 'inline-block',
-                                    fontSize: '0.75rem',
-                                    fontWeight: 'bold'
-                                  }} title={`Başarı: ${s.yuzde.toFixed(1)}%`}>
+                                  <span key={s.id} className="bg-danger text-white px-2 py-0.5 rounded text-[10px] font-bold m-0.5 inline-block cursor-help" title={`Başarı: ${s.yuzde.toFixed(1)}%`}>
                                     {s.code}
                                   </span>
                                 ))
                               ) : '-'}
                             </td>
-                            <td style={{ textAlign: 'center', verticalAlign: 'top', padding: '12px' }}>
+                            <td className="px-3 py-4 text-center align-top min-h-[80px]">
                               {analysisResult.orta.length > 0 ? (
                                 analysisResult.orta.map(s => (
-                                  <span key={s.id} style={{
-                                    background: '#f59e0b',
-                                    color: 'white',
-                                    padding: '4px 8px',
-                                    borderRadius: '4px',
-                                    margin: '2px',
-                                    display: 'inline-block',
-                                    fontSize: '0.75rem',
-                                    fontWeight: 'bold'
-                                  }} title={`Başarı: ${s.yuzde.toFixed(1)}%`}>
+                                  <span key={s.id} className="bg-warning text-white px-2 py-0.5 rounded text-[10px] font-bold m-0.5 inline-block cursor-help" title={`Başarı: ${s.yuzde.toFixed(1)}%`}>
                                     {s.code}
                                   </span>
                                 ))
                               ) : '-'}
                             </td>
-                            <td style={{ textAlign: 'center', verticalAlign: 'top', padding: '12px' }}>
+                            <td className="px-3 py-4 text-center align-top min-h-[80px]">
                               {analysisResult.kolay.length > 0 ? (
                                 analysisResult.kolay.map(s => (
-                                  <span key={s.id} style={{
-                                    background: '#10b981',
-                                    color: 'white',
-                                    padding: '4px 8px',
-                                    borderRadius: '4px',
-                                    margin: '2px',
-                                    display: 'inline-block',
-                                    fontSize: '0.75rem',
-                                    fontWeight: 'bold'
-                                  }} title={`Başarı: ${s.yuzde.toFixed(1)}%`}>
+                                  <span key={s.id} className="bg-success text-white px-2 py-0.5 rounded text-[10px] font-bold m-0.5 inline-block cursor-help" title={`Başarı: ${s.yuzde.toFixed(1)}%`}>
                                     {s.code}
                                   </span>
                                 ))
                               ) : '-'}
                             </td>
                           </tr>
-                          <tr style={{ background: '#f8fafc', fontWeight: 'bold' }}>
-                            <td style={{ textAlign: 'center', color: '#991b1b', fontSize: '0.9rem' }}>
+                          <tr className="bg-slate-50/50 font-bold text-sm">
+                            <td className="px-3 py-3 text-center text-red-700">
                               {analysisResult.getBloomSymbol(analysisResult.zorPct, 20)} {analysisResult.zorPct.toFixed(0)}%
-                              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 'normal', marginLeft: '4px' }}>
+                              <span className="text-[10px] text-text-muted font-normal ml-1">
                                 ({analysisResult.zor.length} / {totalSoru})
                               </span>
                             </td>
-                            <td style={{ textAlign: 'center', color: '#92400e', fontSize: '0.9rem' }}>
+                            <td className="px-3 py-3 text-center text-amber-700">
                               {analysisResult.getBloomSymbol(analysisResult.ortaPct, 60)} {analysisResult.ortaPct.toFixed(0)}%
-                              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 'normal', marginLeft: '4px' }}>
+                              <span className="text-[10px] text-text-muted font-normal ml-1">
                                 ({analysisResult.orta.length} / {totalSoru})
                               </span>
                             </td>
-                            <td style={{ textAlign: 'center', color: '#065f46', fontSize: '0.9rem' }}>
+                            <td className="px-3 py-3 text-center text-green-700">
                               {analysisResult.getBloomSymbol(analysisResult.kolayPct, 20)} {analysisResult.kolayPct.toFixed(0)}%
-                              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 'normal', marginLeft: '4px' }}>
+                              <span className="text-[10px] text-text-muted font-normal ml-1">
                                 ({analysisResult.kolay.length} / {totalSoru})
                               </span>
                             </td>

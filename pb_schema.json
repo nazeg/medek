@@ -1,11 +1,69 @@
 [
   {
+    "id": "_pb_users_auth_",
+    "name": "users",
+    "type": "auth",
+    "system": false,
+    "schema": [
+      {
+        "id": "users_name",
+        "name": "name",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "users_avatar",
+        "name": "avatar",
+        "type": "file",
+        "required": false,
+        "presentable": false,
+        "options": {
+          "mimeTypes": [
+            "image/jpeg",
+            "image/png",
+            "image/svg+xml",
+            "image/gif",
+            "image/webp"
+          ],
+          "thumbs": null,
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "protected": false
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": "id = @request.auth.id",
+    "viewRule": "id = @request.auth.id",
+    "createRule": "",
+    "updateRule": "id = @request.auth.id",
+    "deleteRule": "id = @request.auth.id",
+    "options": {
+      "allowEmailAuth": true,
+      "allowOAuth2Auth": true,
+      "allowUsernameAuth": true,
+      "exceptEmailDomains": null,
+      "manageRule": null,
+      "minPasswordLength": 8,
+      "onlyEmailDomains": null,
+      "onlyVerified": false,
+      "requireEmail": false
+    }
+  },
+  {
     "id": "programs_coll00",
     "name": "programs",
     "type": "base",
     "system": false,
     "schema": [
       {
+        "id": "prg_name_field",
         "name": "name",
         "type": "text",
         "required": true,
@@ -28,6 +86,7 @@
     "system": false,
     "schema": [
       {
+        "id": "trm_name_field",
         "name": "name",
         "type": "text",
         "required": true,
@@ -50,6 +109,7 @@
     "system": false,
     "schema": [
       {
+        "id": "crs_prog_id_fld",
         "name": "program_id",
         "type": "relation",
         "required": true,
@@ -60,6 +120,7 @@
         }
       },
       {
+        "id": "crs_term_id_fld",
         "name": "term_id",
         "type": "relation",
         "required": true,
@@ -70,12 +131,14 @@
         }
       },
       {
+        "id": "crs_code_field",
         "name": "code",
         "type": "text",
         "required": true,
         "options": {}
       },
       {
+        "id": "crs_name_field",
         "name": "name",
         "type": "text",
         "required": true,
@@ -83,41 +146,49 @@
         "options": {}
       },
       {
+        "id": "crs_akts_field",
         "name": "akts",
         "type": "number",
         "options": {}
       },
       {
+        "id": "crs_instructor",
         "name": "instructor",
         "type": "text",
         "options": {}
       },
       {
+        "id": "crs_grade_level",
         "name": "grade_level",
         "type": "text",
         "options": {}
       },
       {
+        "id": "crs_pct_vize_f",
         "name": "pct_vize",
         "type": "number",
         "options": {}
       },
       {
+        "id": "crs_pct_odev_f",
         "name": "pct_odev",
         "type": "number",
         "options": {}
       },
       {
+        "id": "crs_pct_uyg_fl",
         "name": "pct_uygulama",
         "type": "number",
         "options": {}
       },
       {
+        "id": "crs_pct_finalf",
         "name": "pct_final",
         "type": "number",
         "options": {}
       },
       {
+        "id": "crs_pct_but_fl",
         "name": "pct_but",
         "type": "number",
         "options": {}
@@ -140,6 +211,7 @@
     "system": false,
     "schema": [
       {
+        "id": "po_prog_id_fld",
         "name": "program_id",
         "type": "relation",
         "required": true,
@@ -150,12 +222,14 @@
         }
       },
       {
+        "id": "po_code_field",
         "name": "code",
         "type": "text",
         "required": true,
         "options": {}
       },
       {
+        "id": "po_desc_field",
         "name": "description",
         "type": "text",
         "options": {}
@@ -176,6 +250,7 @@
     "system": false,
     "schema": [
       {
+        "id": "co_course_id_f",
         "name": "course_id",
         "type": "relation",
         "required": true,
@@ -186,12 +261,14 @@
         }
       },
       {
+        "id": "co_code_field",
         "name": "code",
         "type": "text",
         "required": true,
         "options": {}
       },
       {
+        "id": "co_desc_field",
         "name": "description",
         "type": "text",
         "options": {}
@@ -212,6 +289,7 @@
     "system": false,
     "schema": [
       {
+        "id": "mat_course_id_",
         "name": "course_id",
         "type": "relation",
         "required": true,
@@ -222,18 +300,21 @@
         }
       },
       {
+        "id": "mat_dc_code_fl",
         "name": "dc_code",
         "type": "text",
         "required": true,
         "options": {}
       },
       {
+        "id": "mat_pc_code_fl",
         "name": "pc_code",
         "type": "text",
         "required": true,
         "options": {}
       },
       {
+        "id": "mat_value_field",
         "name": "value",
         "type": "number",
         "options": {}
@@ -256,6 +337,7 @@
     "system": false,
     "schema": [
       {
+        "id": "q_course_id_fl",
         "name": "course_id",
         "type": "relation",
         "required": true,
@@ -266,39 +348,46 @@
         }
       },
       {
+        "id": "q_code_field",
         "name": "code",
         "type": "text",
         "required": true,
         "options": {}
       },
       {
+        "id": "q_desc_field",
         "name": "description",
         "type": "text",
         "options": {}
       },
       {
+        "id": "q_exam_type_fl",
         "name": "exam_type",
         "type": "text",
         "required": true,
         "options": {}
       },
       {
+        "id": "q_q_type_field",
         "name": "question_type",
         "type": "text",
         "required": true,
         "options": {}
       },
       {
+        "id": "q_dc_code_field",
         "name": "dc_code",
         "type": "text",
         "options": {}
       },
       {
+        "id": "q_max_score_fl",
         "name": "max_score",
         "type": "number",
         "options": {}
       },
       {
+        "id": "q_answer_key_f",
         "name": "answer_key",
         "type": "text",
         "options": {}
@@ -319,6 +408,7 @@
     "system": false,
     "schema": [
       {
+        "id": "s_course_id_fl",
         "name": "course_id",
         "type": "relation",
         "required": true,
@@ -329,12 +419,14 @@
         }
       },
       {
+        "id": "s_student_no_f",
         "name": "student_no",
         "type": "text",
         "required": true,
         "options": {}
       },
       {
+        "id": "s_full_name_fl",
         "name": "full_name",
         "type": "text",
         "required": true,
@@ -358,6 +450,7 @@
     "system": false,
     "schema": [
       {
+        "id": "g_student_id_f",
         "name": "student_id",
         "type": "relation",
         "required": true,
@@ -368,6 +461,7 @@
         }
       },
       {
+        "id": "g_question_id_",
         "name": "question_id",
         "type": "relation",
         "required": true,
@@ -378,6 +472,7 @@
         }
       },
       {
+        "id": "g_score_field",
         "name": "score",
         "type": "number",
         "options": {}

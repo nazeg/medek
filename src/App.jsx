@@ -11,7 +11,7 @@ import AnalysisPanel from './components/AnalysisPanel';
 import ProgramReport from './components/ProgramReport';
 import { 
   Home, Award, BookOpen, Grid3X3, FileText, 
-  GraduationCap, BarChart2, Library, LogOut, Terminal, User 
+  GraduationCap, BarChart2, Library, LogOut, Terminal, User, AlertCircle, Info, HelpCircle
 } from 'lucide-react';
 
 export default function App() {
@@ -30,6 +30,18 @@ export default function App() {
   const [currentTermId, setCurrentTermId] = useState(null);
   const [currentDersId, setCurrentDersId] = useState(null);
 
+  // --- Global Custom Dialog Overlay State ---
+  const [dialog, setDialog] = useState({
+    isOpen: false,
+    type: 'prompt', // 'prompt', 'confirm', 'fields'
+    title: '',
+    message: '',
+    inputValue: '',
+    fields: [], // [{ label, key, placeholder, value }]
+    onConfirm: () => {},
+    onCancel: () => {}
+  });
+
   const addLog = (m) => {
     const time = new Date().toLocaleTimeString();
     setLogs(prev => [`[${time}] > ${m}`, ...prev]);
@@ -46,6 +58,75 @@ export default function App() {
     setLoggedIn(false);
     setCurrentUser(null);
     addLog("Oturum kapatıldı.");
+  };
+
+  // --- Dialog Triggers ---
+  const triggerPrompt = (title, message, defaultValue, placeholder, onConfirm) => {
+    setDialog({
+      isOpen: true,
+      type: 'prompt',
+      title,
+      message,
+      inputValue: defaultValue || '',
+      placeholder: placeholder || '',
+      fields: [],
+      onConfirm: (val) => {
+        onConfirm(val);
+        closeDialog();
+      },
+      onCancel: closeDialog
+    });
+  };
+
+  const triggerConfirm = (title, message, onConfirm) => {
+    setDialog({
+      isOpen: true,
+      type: 'confirm',
+      title,
+      message,
+      inputValue: '',
+      fields: [],
+      onConfirm: () => {
+        onConfirm();
+        closeDialog();
+      },
+      onCancel: closeDialog
+    });
+  };
+
+  const triggerFields = (title, fieldConfigs, onConfirm) => {
+    setDialog({
+      isOpen: true,
+      type: 'fields',
+      title,
+      message: '',
+      inputValue: '',
+      fields: fieldConfigs,
+      onConfirm: (fieldValues) => {
+        onConfirm(fieldValues);
+        closeDialog();
+      },
+      onCancel: closeDialog
+    });
+  };
+
+  const closeDialog = () => {
+    setDialog(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleDialogSubmit = (e) => {
+    e.preventDefault();
+    if (dialog.type === 'prompt') {
+      dialog.onConfirm(dialog.inputValue);
+    } else if (dialog.type === 'fields') {
+      const values = {};
+      dialog.fields.forEach(f => {
+        values[f.key] = f.value;
+      });
+      dialog.onConfirm(values);
+    } else {
+      dialog.onConfirm();
+    }
   };
 
   // Global Fetch Data
@@ -123,18 +204,18 @@ export default function App() {
   ];
 
   return (
-    <div style={{ display: 'flex', width: '100%', height: '100vh' }}>
+    <div className="flex w-full h-screen">
       {/* Sidebar */}
-      <div className="sidebar">
-        <div className="sidebar-header">
-          <h3>MEDEK PRO</h3>
-          <small>Bulut Veritabanı Sürümü</small>
+      <div className="w-[280px] bg-p text-white flex flex-col h-screen fixed left-0 top-0 border-r border-white/5 shadow-2xl z-50">
+        <div className="p-6 text-center border-b border-white/10 bg-black/25">
+          <h3 className="font-display m-0 text-xl font-extrabold tracking-wider bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">MEDEK PRO</h3>
+          <small className="block mt-1 text-[10px] text-blue-300 font-bold uppercase tracking-wider">Bulut Veritabanı Sürümü</small>
         </div>
-        <div className="nav-menu">
+        <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-1">
           {menuItems.map((item) => (
             <div
               key={item.id}
-              className={`nav-item ${activeModule === item.id ? 'active' : ''}`}
+              className={`p-3 cursor-pointer rounded-lg text-xs font-semibold text-slate-400 hover:bg-white/5 hover:text-white transition-all duration-200 flex items-center gap-3 ${activeModule === item.id ? 'bg-s text-white font-bold shadow-md shadow-s/30' : ''}`}
               onClick={() => setActiveModule(item.id)}
             >
               {item.icon}
@@ -144,22 +225,26 @@ export default function App() {
         </div>
 
         {/* Logs Terminal */}
-        <div className="sidebar-log">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '4px', marginBottom: '4px' }}>
-            <Terminal size={10} /> <span>Konsol Çıktısı</span>
+        <div className="bg-[#050b11] h-[130px] border-t border-white/10 p-3.5 font-mono text-[9px] text-green-400 overflow-y-auto flex flex-col gap-0.5 select-none">
+          <div className="flex items-center gap-1.5 border-b border-white/5 pb-1 mb-1 font-bold text-slate-400">
+            <Terminal size={12} /> <span>Konsol Çıktısı</span>
           </div>
           {logs.map((log, idx) => (
-            <div key={idx} style={{ lineHeight: '1.2' }}>{log}</div>
+            <div key={idx} className="line-clamp-1 break-all opacity-85">{log}</div>
           ))}
         </div>
 
         {/* Footer */}
-        <div className="sidebar-footer">
-          <div className="user-info">
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <User size={14} /> {currentUser?.email || 'Kullanıcı'}
+        <div className="p-4 border-t border-white/10 bg-black/15">
+          <div className="flex items-center justify-between text-[11px] text-slate-300">
+            <span className="flex items-center gap-1.5 font-medium truncate max-w-[170px]">
+              <User size={13} className="shrink-0 text-slate-400" /> {currentUser?.email || 'Kullanıcı'}
             </span>
-            <button className="logout-btn" onClick={handleLogout} title="Çıkış Yap">
+            <button 
+              className="bg-transparent border-none text-red-400 hover:bg-red-500/10 p-1.5 rounded-lg cursor-pointer transition-all duration-200" 
+              onClick={handleLogout} 
+              title="Çıkış Yap"
+            >
               <LogOut size={14} />
             </button>
           </div>
@@ -167,8 +252,7 @@ export default function App() {
       </div>
 
       {/* Main Content Area */}
-      <div className="main">
-        {/* Dynamic component routing based on activeModule */}
+      <div className="ml-[280px] p-8 w-[calc(100%-280px)] overflow-y-auto h-screen box-border flex flex-col gap-6">
         {activeModule === 'm_home' && (
           <Hierarchy
             programs={programs}
@@ -182,6 +266,8 @@ export default function App() {
             setCurrentDersId={setCurrentDersId}
             refreshAll={refreshAll}
             addLog={addLog}
+            triggerPrompt={triggerPrompt}
+            triggerConfirm={triggerConfirm}
           />
         )}
 
@@ -190,6 +276,8 @@ export default function App() {
             currentProgId={currentProgId}
             refreshAll={refreshAll}
             addLog={addLog}
+            triggerPrompt={triggerPrompt}
+            triggerConfirm={triggerConfirm}
           />
         )}
 
@@ -198,6 +286,8 @@ export default function App() {
             currentDersId={currentDersId}
             refreshAll={refreshAll}
             addLog={addLog}
+            triggerPrompt={triggerPrompt}
+            triggerConfirm={triggerConfirm}
           />
         )}
 
@@ -214,6 +304,8 @@ export default function App() {
             currentProgId={currentProgId}
             currentDersId={currentDersId}
             addLog={addLog}
+            triggerPrompt={triggerPrompt}
+            triggerConfirm={triggerConfirm}
           />
         )}
 
@@ -221,6 +313,9 @@ export default function App() {
           <GradeEntry
             currentDersId={currentDersId}
             addLog={addLog}
+            triggerPrompt={triggerPrompt}
+            triggerConfirm={triggerConfirm}
+            triggerFields={triggerFields}
           />
         )}
 
@@ -240,6 +335,94 @@ export default function App() {
           />
         )}
       </div>
+
+      {/* --- Global Custom Dialog Overlay Modal --- */}
+      <div 
+        className={`fixed inset-0 bg-slate-950/75 backdrop-blur-md z-[9999] flex justify-center items-center transition-all duration-300 ${dialog.isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} 
+        onClick={closeDialog}
+      >
+        <div 
+          className={`bg-white/95 backdrop-blur-xl border border-white/50 rounded-3xl w-[440px] max-w-[90vw] shadow-2xl overflow-hidden transition-all duration-300 ${dialog.isOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 translate-y-2 opacity-0'}`} 
+          onClick={(e) => e.stopPropagation()}
+        >
+          <form onSubmit={handleDialogSubmit}>
+            <div className="flex items-center p-6 pb-4 relative">
+              <div className={`flex items-center justify-center w-10 h-10 rounded-xl mr-4 shrink-0 border ${dialog.type === 'confirm' ? 'bg-danger/10 text-danger border-danger/20' : dialog.type === 'prompt' ? 'bg-s/10 text-s border-s/20' : 'bg-success/10 text-success border-success/20'}`}>
+                {dialog.type === 'confirm' ? <AlertCircle size={20} /> : dialog.type === 'prompt' ? <HelpCircle size={20} /> : <Info size={20} />}
+              </div>
+              <div>
+                <h3 className="font-display m-0 text-[16px] font-bold text-slate-900 tracking-tight">{dialog.title}</h3>
+              </div>
+              <button type="button" className="absolute top-6 right-6 bg-transparent border-none text-slate-400 hover:text-slate-900 text-xl cursor-pointer transition-all hover:scale-110" onClick={closeDialog}>×</button>
+            </div>
+            
+            <div className="px-6 pb-6">
+              {dialog.message && (
+                <p className="margin-0 mb-4 text-xs text-slate-500 font-medium leading-relaxed">
+                  {dialog.message}
+                </p>
+              )}
+
+              {dialog.type === 'prompt' && (
+                <div>
+                  <input
+                    type="text"
+                    required
+                    autoFocus
+                    placeholder={dialog.placeholder}
+                    value={dialog.inputValue}
+                    onChange={(e) => setDialog(prev => ({ ...prev, inputValue: e.target.value }))}
+                    className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-white/80 font-sans text-sm text-slate-900 outline-none transition-all duration-200 focus:border-s focus:bg-white focus:ring-4 focus:ring-s/12 box-border"
+                  />
+                </div>
+              )}
+
+              {dialog.type === 'fields' && (
+                <div className="flex flex-col gap-4">
+                  {dialog.fields.map((field, idx) => (
+                    <div className="flex flex-col gap-1.5" key={field.key}>
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{field.label}</label>
+                      <input
+                        type="text"
+                        required
+                        autoFocus={idx === 0}
+                        placeholder={field.placeholder}
+                        value={field.value}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setDialog(prev => {
+                            const updatedFields = [...prev.fields];
+                            updatedFields[idx] = { ...updatedFields[idx], value: val };
+                            return { ...prev, fields: updatedFields };
+                          });
+                        }}
+                        className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-white/80 font-sans text-sm text-slate-900 outline-none transition-all duration-200 focus:border-s focus:bg-white focus:ring-4 focus:ring-s/12 box-border"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-3 px-6 py-4 bg-slate-50/50 border-t border-slate-900/5">
+              <button 
+                type="button" 
+                className="px-4 py-2 rounded-xl font-semibold text-xs border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 cursor-pointer transition-all duration-200" 
+                onClick={closeDialog}
+              >
+                İptal
+              </button>
+              <button 
+                type="submit" 
+                className={`px-4 py-2 rounded-xl font-semibold text-xs text-white shadow-md cursor-pointer transition-all duration-200 ${dialog.type === 'confirm' ? 'bg-gradient-to-r from-danger to-red-600 hover:from-red-600 hover:to-red-700 shadow-danger/25' : 'bg-gradient-to-r from-s to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-s/25'}`}
+              >
+                {dialog.type === 'confirm' ? 'Evet, Onayla' : 'Tamam'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
     </div>
   );
 }

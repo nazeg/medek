@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { pb } from '../pb';
 import ExcelJS from 'exceljs';
 import * as XLSX from 'xlsx';
-import { Plus, Trash2, Download, Upload, Filter, Save, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Download, Upload } from 'lucide-react';
 
-export default function GradeEntry({ currentDersId, addLog }) {
+export default function GradeEntry({ currentDersId, addLog, triggerPrompt, triggerConfirm, triggerFields }) {
   const [students, setStudents] = useState([]);
   const [grades, setGrades] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -88,35 +88,48 @@ export default function GradeEntry({ currentDersId, addLog }) {
     }
   };
 
-  const handleDeleteStudent = async (id) => {
-    if (confirm("Öğrenci silinsin mi?")) {
-      try {
-        await pb.collection('students').delete(id);
-        addLog("Öğrenci silindi.");
-        fetchGradesData();
-      } catch (e) {
-        alert("Hata: " + e.message);
+  const handleDeleteStudent = (id) => {
+    triggerConfirm(
+      "Öğrenciyi Sil",
+      "Öğrenci silinsin mi?",
+      async () => {
+        try {
+          await pb.collection('students').delete(id);
+          addLog("Öğrenci silindi.");
+          fetchGradesData();
+        } catch (e) {
+          alert("Hata: " + e.message);
+        }
       }
-    }
+    );
   };
 
-  const handleAddStudent = async () => {
+  const handleAddStudent = () => {
     if (!currentDersId) return;
-    const no = prompt("Öğrenci No:");
-    const ad = prompt("Ad Soyad:");
-    if (no && ad) {
-      try {
-        await pb.collection('students').create({
-          course_id: currentDersId,
-          student_no: no,
-          full_name: ad
-        });
-        addLog(`Öğrenci eklendi: ${no} - ${ad}`);
-        fetchGradesData();
-      } catch (e) {
-        alert("Hata: " + e.message);
+    triggerFields(
+      "Manuel Öğrenci Ekle",
+      [
+        { label: "Öğrenci No", key: "student_no", placeholder: "örn: 2024001", value: "" },
+        { label: "Adı Soyadı", key: "full_name", placeholder: "örn: Ahmet Yılmaz", value: "" }
+      ],
+      async (fieldValues) => {
+        const no = fieldValues.student_no?.trim();
+        const ad = fieldValues.full_name?.trim();
+        if (no && ad) {
+          try {
+            await pb.collection('students').create({
+              course_id: currentDersId,
+              student_no: no,
+              full_name: ad
+            });
+            addLog(`Öğrenci eklendi: ${no} - ${ad}`);
+            fetchGradesData();
+          } catch (e) {
+            alert("Hata: " + e.message);
+          }
+        }
       }
-    }
+    );
   };
 
   // Filter questions according to selected exam type
@@ -336,97 +349,97 @@ export default function GradeEntry({ currentDersId, addLog }) {
   };
 
   return (
-    <div className="card">
-      <h3 className="card-title">Öğrenci Not Girişi</h3>
+    <div className="bg-white p-6 rounded-2xl border border-border shadow-sm hover:shadow-md transition-all duration-200">
+      <h3 className="font-display m-0 mb-4 text-base font-bold text-p flex items-center gap-2 tracking-tight">Öğrenci Not Girişi</h3>
 
-      <div className="excel-box">
-        <button className="btn btn-secondary btn-sm" onClick={downloadTemplate}>
+      <div className="flex items-center gap-4 bg-slate-50/50 border border-dashed border-border p-4 rounded-xl mb-5">
+        <button className="px-2.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 cursor-pointer transition-all flex items-center gap-1.5" onClick={downloadTemplate}>
           <Download size={14} /> Öğrenci Şablonu İndir
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Upload size={14} style={{ color: 'var(--text-muted)' }} />
-          <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} />
+        <div className="flex items-center gap-2">
+          <Upload size={14} className="text-text-muted" />
+          <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} className="border-none p-0 bg-transparent text-xs text-text-muted font-medium w-auto cursor-pointer" />
         </div>
       </div>
 
-      <div className="btn-group" style={{ marginBottom: '15px', display: 'flex', width: '100%', alignItems: 'center' }}>
+      <div className="flex items-center gap-2 flex-wrap mb-4 w-full">
         {['Vize', 'Final', 'Bütünleme', 'Ödev', 'Uygulama', 'Tümü'].map((filter) => (
           <button
             key={filter}
-            className={`btn btn-sm ${activeFilter === filter ? 'btn-primary' : 'btn-secondary'}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all ${activeFilter === filter ? 'bg-s text-white shadow-md shadow-s/10' : 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-700'}`}
             onClick={() => setActiveFilter(filter)}
           >
             {filter}
           </button>
         ))}
 
-        <button className="btn btn-success btn-sm" style={{ marginLeft: 'auto' }} onClick={handleAddStudent} disabled={!currentDersId}>
+        <button className="px-3 py-1.5 bg-success hover:opacity-90 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-md shadow-success/10 ml-auto disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleAddStudent} disabled={!currentDersId}>
           <Plus size={12} /> Manuel Öğrenci Ekle
         </button>
       </div>
 
       {!currentDersId ? (
-        <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
+        <div className="text-center p-8 text-text-muted border border-dashed border-border rounded-xl text-sm font-medium">
           Lütfen üst menüden bir Ders seçiniz.
         </div>
       ) : loading ? (
-        <div style={{ textAlign: 'center', padding: '20px' }}>Yükleniyor...</div>
+        <div className="text-center p-8 text-text-muted text-sm font-medium">Yükleniyor...</div>
       ) : students.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)', border: '1px dashed var(--border)', borderRadius: '8px' }}>
+        <div className="text-center p-8 text-text-muted border border-dashed border-border rounded-xl text-sm font-medium">
           Öğrenci listesi boş. "Manuel Öğrenci Ekle" veya Excel'den toplu içe aktarabilirsiniz.
         </div>
       ) : (
-        <div className="table-container" style={{ overflowX: 'auto' }}>
-          <table style={{ tableLayout: 'fixed', minWidth: '850px' }}>
+        <div className="overflow-x-auto border border-border rounded-xl bg-white mt-4">
+          <table className="w-full border-collapse text-left min-w-[850px]">
             <thead>
-              <tr>
-                <th style={{ width: '110px' }}>No</th>
-                <th style={{ width: '180px' }}>Ad Soyad</th>
+              <tr className="border-b border-border bg-slate-50/50">
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[125px]">No</th>
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[200px]">Ad Soyad</th>
                 {activeQuestions.map(s => (
-                  <th key={s.id} style={{ width: '75px', textAlign: 'center', wordBreak: 'break-word', lineHeight: 1.1 }}>
+                  <th key={s.id} className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[85px] text-center word-break-normal leading-normal">
                     {s.code}<br />({s.max_score}p)<br />
-                    <small style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 'normal' }}>
+                    <small className="text-[10px] text-text-muted font-normal">
                       {s.exam_type.substring(0, 3)}
                     </small>
                   </th>
                 ))}
-                <th style={{ width: '60px', textAlign: 'center' }}>İşlem</th>
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[75px] text-center">İşlem</th>
               </tr>
             </thead>
             <tbody>
               {students.map((o) => (
-                <tr key={o.id}>
-                  <td>
+                <tr key={o.id} className="border-b border-border last:border-0 hover:bg-slate-50/20">
+                  <td className="px-3 py-2">
                     <input
-                      style={{ padding: '4px', textAlign: 'center', fontSize: '0.8rem' }}
                       defaultValue={o.student_no}
                       onBlur={(e) => {
                         if (e.target.value !== o.student_no) {
                           handleUpdateStudent(o.id, 'student_no', e.target.value);
                         }
                       }}
+                      className="w-full px-2 py-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 text-center"
                     />
                   </td>
-                  <td>
+                  <td className="px-3 py-2">
                     <input
-                      style={{ padding: '4px 8px', fontSize: '0.8rem' }}
                       defaultValue={o.full_name}
                       onBlur={(e) => {
                         if (e.target.value !== o.full_name) {
                           handleUpdateStudent(o.id, 'full_name', e.target.value);
                         }
                       }}
+                      className="w-full px-3 py-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200"
                     />
                   </td>
                   {activeQuestions.map(s => {
                     const gradeVal = getStudentGradeVal(o.id, s.id);
                     if (s.question_type === 'Çoktan Seçmeli') {
                       return (
-                        <td key={s.id} style={{ padding: '2px' }}>
+                        <td key={s.id} className="px-3 py-2">
                           <select
-                            style={{ padding: '4px', fontSize: '0.8rem', textAlign: 'center' }}
                             value={gradeVal}
                             onChange={(e) => handleUpdateGrade(o.id, s.id, e.target.value, null)}
+                            className="w-full p-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 text-center"
                           >
                             <option value="">-</option>
                             <option value="1">A</option>
@@ -439,11 +452,11 @@ export default function GradeEntry({ currentDersId, addLog }) {
                       );
                     } else if (s.question_type === 'Doğru Yanlış') {
                       return (
-                        <td key={s.id} style={{ padding: '2px' }}>
+                        <td key={s.id} className="px-3 py-2">
                           <select
-                            style={{ padding: '4px', fontSize: '0.8rem', textAlign: 'center' }}
                             value={gradeVal}
                             onChange={(e) => handleUpdateGrade(o.id, s.id, e.target.value, null)}
+                            className="w-full p-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 text-center"
                           >
                             <option value="">-</option>
                             <option value="11">D</option>
@@ -453,21 +466,21 @@ export default function GradeEntry({ currentDersId, addLog }) {
                       );
                     } else {
                       return (
-                        <td key={s.id} style={{ padding: '2px' }}>
+                        <td key={s.id} className="px-3 py-2">
                           <input
                             type="number"
                             min="0"
                             max={s.max_score}
-                            style={{ padding: '4px', textAlign: 'center', fontSize: '0.8rem' }}
                             value={gradeVal}
                             onChange={(e) => handleUpdateGrade(o.id, s.id, e.target.value, s.max_score)}
+                            className="w-full px-1.5 py-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 text-center font-bold"
                           />
                         </td>
                       );
                     }
                   })}
-                  <td style={{ textAlign: 'center' }}>
-                    <button className="btn btn-danger btn-sm" style={{ padding: '4px 8px' }} onClick={() => handleDeleteStudent(o.id)}>
+                  <td className="px-3 py-2 text-center">
+                    <button className="px-2 py-1.5 bg-danger hover:opacity-90 text-white rounded-md text-[11px] font-semibold cursor-pointer transition-all flex items-center gap-1 shadow-sm shadow-danger/10 mx-auto" onClick={() => handleDeleteStudent(o.id)}>
                       <Trash2 size={12} />
                     </button>
                   </td>

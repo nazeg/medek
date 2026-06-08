@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { pb } from '../pb';
 import { Bar, Radar } from 'react-chartjs-2';
-import { Download, Library, Calendar, CheckSquare, Square, RefreshCw } from 'lucide-react';
+import { Download, Library, Calendar, RefreshCw } from 'lucide-react';
 
 export default function ProgramReport({ programs, terms, addLog }) {
   const [selectedProgId, setSelectedProgId] = useState('');
   const [matrixSelections, setMatrixSelections] = useState({}); // termId_grade -> boolean
   const [loading, setLoading] = useState(false);
   const [reportResult, setReportResult] = useState(null);
-
-  const [reportChartBar, setReportChartBar] = useState(null);
-  const [reportChartRadar, setReportChartRadar] = useState(null);
 
   useEffect(() => {
     if (programs.length > 0) {
@@ -302,22 +299,22 @@ export default function ProgramReport({ programs, terms, addLog }) {
   const getSuccessBg = (val) => val >= 70 ? '#d1fae5' : val >= 50 ? '#fef3c7' : '#fee2e2';
 
   return (
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h3 className="card-title" style={{ margin: 0 }}>
+    <div className="bg-white p-6 rounded-2xl border border-border shadow-sm hover:shadow-md transition-all duration-200">
+      <div className="flex justify-between items-center mb-5">
+        <h3 className="font-display m-0 text-base font-bold text-p flex items-center gap-2 tracking-tight">
           <Library size={18} /> Program PÇ Raporu (Çoklu Dönem)
         </h3>
         {reportResult && (
-          <button className="btn btn-primary btn-sm" onClick={handleExportPDF}>
+          <button className="px-3 py-1.5 bg-s hover:bg-p-hover text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-md shadow-s/10" onClick={handleExportPDF}>
             <Download size={12} /> Rapor PDF İndir
           </button>
         )}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px' }}>
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label>Raporlanacak Program</label>
-          <select value={selectedProgId} onChange={(e) => setSelectedProgId(e.target.value)}>
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Raporlanacak Program</label>
+          <select value={selectedProgId} onChange={(e) => setSelectedProgId(e.target.value)} className="w-full mt-1.5 p-2.5 border border-border rounded-xl text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200">
             <option value="">Seçiniz</option>
             {programs.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
@@ -325,44 +322,37 @@ export default function ProgramReport({ programs, terms, addLog }) {
 
         {/* Term & Class Selection Matrix */}
         <div>
-          <label className="form-group" style={{ display: 'block', margin: '10px 0 6px 0' }}>Dönem & Sınıf Seçim Matrisi</label>
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Dönem & Sınıf Seçim Matrisi</label>
           
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-            <button className="btn btn-secondary btn-sm" onClick={() => handleSelectAll(true)}>Hepsini Seç</button>
-            <button className="btn btn-secondary btn-sm" onClick={() => handleSelectAll(false)}>Seçimleri Temizle</button>
+          <div className="flex gap-2 mb-3">
+            <button className="px-2.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 cursor-pointer transition-all flex items-center gap-1" onClick={() => handleSelectAll(true)}>Hepsini Seç</button>
+            <button className="px-2.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 cursor-pointer transition-all flex items-center gap-1" onClick={() => handleSelectAll(false)}>Seçimleri Temizle</button>
           </div>
 
           {terms.length === 0 ? (
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Sistemde tanımlı dönem bulunamadı.</span>
+            <span className="text-xs text-text-muted font-medium">Sistemde tanımlı dönem bulunamadı.</span>
           ) : (
-            <div className="table-container">
-              <table>
+            <div className="overflow-x-auto border border-border rounded-xl bg-white">
+              <table className="w-full border-collapse text-left">
                 <thead>
-                  <tr style={{ background: '#f8fafc' }}>
-                    <th>Dönem</th>
+                  <tr className="border-b border-border bg-slate-50/50">
+                    <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider">Dönem</th>
                     {grades.map(g => (
-                      <th key={g} style={{ textAlign: 'center', width: '120px' }}>{gradeLabels[g]}</th>
+                      <th key={g} className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider text-center w-[120px]">{gradeLabels[g]}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {terms.map(t => (
-                    <tr key={t.id}>
-                      <td style={{ fontWeight: 'bold' }}>{t.name}</td>
+                    <tr key={t.id} className="border-b border-border last:border-0 hover:bg-slate-50/20">
+                      <td className="px-3 py-2.5 font-bold text-xs text-slate-800">{t.name}</td>
                       {grades.map(g => {
                         const key = `${t.id}_${g}`;
                         const isChecked = !!matrixSelections[key];
                         return (
-                          <td key={g} style={{ textAlign: 'center' }}>
+                          <td key={g} className="px-3 py-2 text-center">
                             <button
-                              className="btn btn-sm"
-                              style={{
-                                background: isChecked ? '#fef3c7' : 'white',
-                                borderColor: isChecked ? '#f59e0b' : '#cbd5e1',
-                                color: isChecked ? '#b45309' : '#64748b',
-                                width: '100%',
-                                justifyContent: 'center'
-                              }}
+                              className={`w-full px-2 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all text-center block border ${isChecked ? 'bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-800' : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-500'}`}
                               onClick={() => handleCellToggle(t.id, g)}
                             >
                               {isChecked ? 'Seçildi' : 'Seç'}
@@ -378,10 +368,10 @@ export default function ProgramReport({ programs, terms, addLog }) {
           )}
         </div>
 
-        <button className="btn btn-primary" onClick={handleGenerateReport} disabled={loading || !selectedProgId} style={{ marginTop: '10px' }}>
+        <button className="px-4 py-2.5 mt-2 bg-s hover:bg-p-hover text-white rounded-lg text-sm font-semibold cursor-pointer transition-all flex items-center justify-center gap-1.5 shadow-md shadow-s/10 w-full disabled:opacity-50" onClick={handleGenerateReport} disabled={loading || !selectedProgId}>
           {loading ? (
             <>
-              <RefreshCw className="fa-spin" size={14} /> Rapor Oluşturuluyor...
+              <RefreshCw className="animate-spin" size={14} /> Rapor Oluşturuluyor...
             </>
           ) : (
             <>Raporu Oluştur</>
@@ -391,19 +381,19 @@ export default function ProgramReport({ programs, terms, addLog }) {
 
       {/* Report Results */}
       {reportResult && (
-        <div id="prog-report-export-area" style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '20px' }}>
+        <div id="prog-report-export-area" className="flex flex-col gap-6 mt-6">
           
-          <div style={{ textAlign: 'center', borderBottom: '2px solid var(--border)', paddingBottom: '16px' }}>
-            <h2 style={{ margin: 0, fontFamily: 'Outfit, sans-serif', color: 'var(--p)' }}>{reportResult.program?.name}</h2>
-            <h4 style={{ margin: '6px 0 0', color: 'var(--s)' }}>Program Çıktısı (PÇ) Geri Besleme Raporu</h4>
-            <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '8px', flexWrap: 'wrap' }}>
+          <div className="text-center border-b border-border pb-4">
+            <h2 className="margin-0 font-display text-xl font-extrabold text-slate-900 tracking-tight">{reportResult.program?.name}</h2>
+            <h4 className="margin-0 mt-1 text-sm font-bold text-s uppercase tracking-wider">Program Çıktısı (PÇ) Geri Besleme Raporu</h4>
+            <div className="flex gap-1.5 justify-center mt-2.5 flex-wrap">
               {reportResult.selectedClassIds.map(g => (
-                <span key={g} style={{ background: '#fef3c7', color: '#b45309', padding: '2px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 'bold' }}>
+                <span key={g} className="bg-amber-50 text-amber-800 px-3 py-1 rounded-full text-[10px] font-bold border border-amber-100">
                   {getSinifLabel(g)}
                 </span>
               ))}
               {reportResult.selectedTerms.map(t => (
-                <span key={t.id} style={{ background: '#eff6ff', color: 'var(--s)', padding: '2px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 'bold' }}>
+                <span key={t.id} className="bg-blue-50 text-s px-3 py-1 rounded-full text-[10px] font-bold border border-blue-100">
                   {t.name}
                 </span>
               ))}
@@ -411,10 +401,10 @@ export default function ProgramReport({ programs, terms, addLog }) {
           </div>
 
           {/* Charts Row */}
-          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1.5, minWidth: '350px' }} className="card">
-              <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 'bold' }}>📊 PÇ Başarı Grafiği</h4>
-              <div style={{ height: '320px', position: 'relative' }}>
+          <div className="flex gap-5 flex-col lg:flex-row">
+            <div className="flex-[1.5] min-w-[320px] bg-white p-6 rounded-2xl border border-border shadow-sm">
+              <h4 className="font-display m-0 mb-4 text-sm font-bold text-p tracking-tight">📊 PÇ Başarı Grafiği</h4>
+              <div className="h-[320px] relative">
                 <Bar
                   data={{
                     labels: reportResult.finalPcLabels,
@@ -434,7 +424,7 @@ export default function ProgramReport({ programs, terms, addLog }) {
                         anchor: 'end',
                         align: 'top',
                         formatter: (val) => val.toFixed(1) + '%',
-                        font: { weight: 'bold', size: 10 },
+                        font: { weight: 'bold', size: 9 },
                         color: 'var(--p)'
                       }
                     },
@@ -444,9 +434,9 @@ export default function ProgramReport({ programs, terms, addLog }) {
               </div>
             </div>
 
-            <div style={{ flex: 1, minWidth: '280px' }} className="card">
-              <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 'bold' }}>🕸️ PÇ Radar Görünümü</h4>
-              <div style={{ height: '320px', position: 'relative' }}>
+            <div className="flex-1 min-w-[280px] bg-white p-6 rounded-2xl border border-border shadow-sm">
+              <h4 className="font-display m-0 mb-4 text-sm font-bold text-p tracking-tight">🕸️ PÇ Radar Görünümü</h4>
+              <div className="h-[320px] relative">
                 <Radar
                   data={{
                     labels: reportResult.finalPcLabels,
@@ -472,30 +462,25 @@ export default function ProgramReport({ programs, terms, addLog }) {
           </div>
 
           {/* Outcomes Descriptions Table */}
-          <div className="card">
-            <h4 className="card-title">🎯 Program Çıktısı Özet Detayı ({reportResult.sortedPcs.length} PÇ)</h4>
-            <div className="table-container">
-              <table>
+          <div className="bg-white p-6 rounded-2xl border border-border shadow-sm">
+            <h4 className="font-display m-0 mb-3 text-sm font-bold text-p tracking-tight">🎯 Program Çıktısı Özet Detayı ({reportResult.sortedPcs.length} PÇ)</h4>
+            <div className="overflow-x-auto border border-border rounded-xl bg-white">
+              <table className="w-full border-collapse text-left">
                 <thead>
-                  <tr>
-                    <th style={{ width: '80px' }}>Kod</th>
-                    <th>Açıklama</th>
-                    <th style={{ width: '100px', textAlign: 'center' }}>Genel Başarı</th>
+                  <tr className="border-b border-border bg-slate-50/50">
+                    <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[100px]">Kod</th>
+                    <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider">Açıklama</th>
+                    <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[120px] text-center">Genel Başarı</th>
                   </tr>
                 </thead>
                 <tbody>
                   {reportResult.sortedPcs.map((pc, idx) => {
                     const score = reportResult.finalPcData[idx];
                     return (
-                      <tr key={pc.id}>
-                        <td><b>{pc.code}</b></td>
-                        <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{pc.description || '-'}</td>
-                        <td style={{
-                          textAlign: 'center',
-                          fontWeight: 'bold',
-                          color: getSuccessColor(score),
-                          backgroundColor: getSuccessBg(score)
-                        }}>
+                      <tr key={pc.id} className="border-b border-border last:border-0 hover:bg-slate-50/20">
+                        <td className="px-3 py-2.5 font-bold text-xs text-slate-800">{pc.code}</td>
+                        <td className="px-3 py-2.5 text-xs text-text-muted leading-relaxed">{pc.description || '-'}</td>
+                        <td className="px-3 py-2.5 text-center font-bold text-xs" style={{ color: getSuccessColor(score), backgroundColor: getSuccessBg(score) }}>
                           {score.toFixed(1)}%
                         </td>
                       </tr>
@@ -507,16 +492,16 @@ export default function ProgramReport({ programs, terms, addLog }) {
           </div>
 
           {/* Courses Contributions Matrix Table */}
-          <div className="card">
-            <h4 className="card-title">📚 Ders Bazlı PÇ Katkı Tablosu ({reportResult.coursePcRows.length} ders)</h4>
-            <div className="table-container">
-              <table style={{ minWidth: '600px' }}>
+          <div className="bg-white p-6 rounded-2xl border border-border shadow-sm">
+            <h4 className="font-display m-0 mb-3 text-sm font-bold text-p tracking-tight">📚 Ders Bazlı PÇ Katkı Tablosu ({reportResult.coursePcRows.length} ders)</h4>
+            <div className="overflow-x-auto border border-border rounded-xl bg-white">
+              <table className="w-full border-collapse text-left min-w-[600px]">
                 <thead>
-                  <tr style={{ background: 'var(--p)', color: 'white' }}>
-                    <th style={{ color: 'white' }}>Dönem / Ders</th>
-                    <th style={{ textAlign: 'center', width: '55px', color: 'white' }}>AKTS</th>
+                  <tr className="bg-p border-b border-border text-white text-xs font-bold uppercase tracking-wider">
+                    <th className="px-3 py-3 text-white">Dönem / Ders</th>
+                    <th className="px-3 py-3 text-white text-center w-[75px]">AKTS</th>
                     {reportResult.finalPcLabels.map(l => (
-                      <th key={l} style={{ textAlign: 'center', width: '65px', color: 'white' }}>{l}</th>
+                      <th key={l} className="px-3 py-3 text-white text-center w-[85px]">{l}</th>
                     ))}
                   </tr>
                 </thead>
@@ -528,35 +513,28 @@ export default function ProgramReport({ programs, terms, addLog }) {
                     return (
                       <React.Fragment key={term.id}>
                         {/* Term Header Row */}
-                        <tr style={{ background: '#eff6ff', fontWeight: 'bold' }}>
-                          <td colSpan={2 + reportResult.finalPcLabels.length} style={{ color: 'var(--s)', padding: '8px 12px' }}>
+                        <tr className="bg-s-light font-bold text-xs border-b border-border">
+                          <td colSpan={2 + reportResult.finalPcLabels.length} className="px-4 py-2.5 text-s">
                             📅 {term.name} — {termRows.length} ders
                           </td>
                         </tr>
                         {/* Course Rows */}
                         {termRows.map((row, idx) => (
-                          <tr key={row.course.id} style={{ background: idx % 2 === 0 ? 'white' : '#f8fafc' }}>
-                            <td style={{ paddingLeft: '24px', fontWeight: '500' }}>
+                          <tr key={row.course.id} className="border-b border-border hover:bg-slate-50/20">
+                            <td className="px-4 py-2.5 pl-6 font-semibold text-xs text-slate-800">
                               {row.course.code && (
-                                <span style={{
-                                  background: 'var(--p)',
-                                  color: 'white',
-                                  padding: '1px 5px',
-                                  borderRadius: '3px',
-                                  fontSize: '0.75rem',
-                                  marginRight: '6px'
-                                }}>
+                                <span className="bg-p text-white px-1.5 py-0.5 rounded text-[10px] font-bold mr-1.5 inline-block">
                                   {row.course.code}
                                 </span>
                               )}
                               {row.course.name}
                             </td>
-                            <td style={{ textAlign: 'center', color: 'var(--text-muted)' }}>{row.akts}</td>
+                            <td className="px-3 py-2.5 text-center text-xs text-text-muted font-medium">{row.akts}</td>
                             {reportResult.finalPcLabels.map(pc => {
                               const v = row.pcScores[pc];
-                              if (v === null) return <td key={pc} style={{ textAlign: 'center', color: '#cbd5e1' }}>—</td>;
+                              if (v === null) return <td key={pc} className="px-3 py-2.5 text-center text-slate-300 text-xs">—</td>;
                               return (
-                                <td key={pc} style={{ textAlign: 'center', fontWeight: 'bold', color: getSuccessColor(v) }}>
+                                <td key={pc} className="px-3 py-2.5 text-center font-bold text-xs" style={{ color: getSuccessColor(v) }}>
                                   {v.toFixed(1)}
                                 </td>
                               );
@@ -566,16 +544,14 @@ export default function ProgramReport({ programs, terms, addLog }) {
 
                         {/* Term Average Row */}
                         {reportResult.selectedTerms.length > 1 && (
-                          <tr style={{ background: '#f8fafc', borderTop: '1px solid #cbd5e1', fontStyle: 'italic' }}>
-                            <td style={{ paddingLeft: '16px', color: 'var(--text-muted)' }}>↳ {term.name} Dönemi Ortalaması</td>
-                            <td style={{ textAlign: 'center' }}>
-                              {termRows.reduce((sum, r) => sum + r.akts, 0)}
-                            </td>
+                          <tr className="bg-slate-50/50 border-b border-border italic text-xs font-semibold text-text-muted">
+                            <td className="px-4 py-2.5 pl-4">↳ {term.name} Dönemi Ortalaması</td>
+                            <td className="px-3 py-2.5 text-center">{termRows.reduce((sum, r) => sum + r.akts, 0)}</td>
                             {reportResult.finalPcLabels.map(pc => {
                               const ts = reportResult.termSummaryMap[term.id][pc];
                               const v = ts.wAkts > 0 ? ts.wSum / ts.wAkts : 0;
                               return (
-                                <td key={pc} style={{ textAlign: 'center', fontWeight: 'bold', color: getSuccessColor(v) }}>
+                                <td key={pc} className="px-3 py-2.5 text-center font-bold text-xs" style={{ color: getSuccessColor(v) }}>
                                   {v.toFixed(1)}
                                 </td>
                               );
@@ -587,20 +563,13 @@ export default function ProgramReport({ programs, terms, addLog }) {
                   })}
 
                   {/* Grand Average row */}
-                  <tr style={{ background: '#e2e8f0', borderTop: '2px solid #94a3b8', fontWeight: 'bold' }}>
-                    <td>GENEL ORTALAMA (AKTS Ağırlıklı)</td>
-                    <td style={{ textAlign: 'center' }}>
-                      {reportResult.coursePcRows.reduce((sum, r) => sum + r.akts, 0)}
-                    </td>
+                  <tr className="bg-slate-100 font-bold border-t-2 border-slate-300 text-slate-800 text-xs">
+                    <td className="px-3 py-3.5">GENEL ORTALAMA (AKTS Ağırlıklı)</td>
+                    <td className="px-3 py-3.5 text-center">{reportResult.coursePcRows.reduce((sum, r) => sum + r.akts, 0)}</td>
                     {reportResult.finalPcLabels.map((pc, idx) => {
                       const v = reportResult.finalPcData[idx];
                       return (
-                        <td key={pc} style={{
-                          textAlign: 'center',
-                          color: 'white',
-                          backgroundColor: getSuccessColor(v),
-                          fontSize: '0.9rem'
-                        }}>
+                        <td key={pc} className="px-3 py-3.5 text-center font-bold text-xs text-white" style={{ backgroundColor: getSuccessColor(v) }}>
                           {v.toFixed(1)}%
                         </td>
                       );

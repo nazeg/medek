@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { pb } from '../pb';
 import ExcelJS from 'exceljs';
 import * as XLSX from 'xlsx';
-import { Plus, Trash2, Download, Upload, Filter, CheckCircle, ChevronDown, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Download, Upload, ChevronDown } from 'lucide-react';
 
-export default function QuestionBank({ currentProgId, currentDersId, addLog }) {
+export default function QuestionBank({ currentProgId, currentDersId, addLog, triggerPrompt, triggerConfirm }) {
   const [questions, setQuestions] = useState([]);
   const [dcs, setDcs] = useState([]);
   const [pcs, setPcs] = useState([]);
@@ -124,41 +124,52 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog }) {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (confirm("Soru silinsin mi?")) {
-      try {
-        await pb.collection('questions').delete(id);
-        addLog("Soru silindi.");
-        fetchQuestionsAndOutcomes();
-      } catch (e) {
-        alert("Hata: " + e.message);
+  const handleDelete = (id) => {
+    triggerConfirm(
+      "Soruyu Sil",
+      "Soru silinsin mi?",
+      async () => {
+        try {
+          await pb.collection('questions').delete(id);
+          addLog("Soru silindi.");
+          fetchQuestionsAndOutcomes();
+        } catch (e) {
+          alert("Hata: " + e.message);
+        }
       }
-    }
+    );
   };
 
-  const handleAddSoru = async () => {
+  const handleAddSoru = () => {
     if (!currentDersId) return;
-    const code = prompt("Soru Kodu (örn: S1):");
-    if (!code) return;
+    
+    triggerPrompt(
+      "Yeni Soru Tanımla",
+      "Soru Kodu giriniz (örn: S1):",
+      "",
+      "Soru Kodu",
+      async (code) => {
+        if (!code) return;
+        const examType = activeFilter === 'Tümü' ? 'Vize' : activeFilter;
+        const defaultDc = dcs.length > 0 ? dcs[0].code : 'DÇ1';
 
-    const examType = activeFilter === 'Tümü' ? 'Vize' : activeFilter;
-    const defaultDc = dcs.length > 0 ? dcs[0].code : 'DÇ1';
-
-    try {
-      const record = await pb.collection('questions').create({
-        course_id: currentDersId,
-        code: code,
-        exam_type: examType,
-        dc_code: defaultDc,
-        max_score: 10,
-        question_type: 'Klasik',
-        answer_key: ''
-      });
-      addLog(`Yeni soru tanımlandı: ${code} (${examType})`);
-      fetchQuestionsAndOutcomes();
-    } catch (e) {
-      alert("Hata: " + e.message);
-    }
+        try {
+          const record = await pb.collection('questions').create({
+            course_id: currentDersId,
+            code: code,
+            exam_type: examType,
+            dc_code: defaultDc,
+            max_score: 10,
+            question_type: 'Klasik',
+            answer_key: ''
+          });
+          addLog(`Yeni soru tanımlandı: ${code} (${examType})`);
+          fetchQuestionsAndOutcomes();
+        } catch (e) {
+          alert("Hata: " + e.message);
+        }
+      }
+    );
   };
 
   // Excel Templates Download
@@ -298,8 +309,6 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog }) {
           return;
         }
 
-        // Insert individually or in parallel batch. PocketBase JS SDK supports batch or sequential creations.
-        // Sequential creation for database simplicity:
         let importCount = 0;
         for (const r of rows) {
           await pb.collection('questions').create({
@@ -348,24 +357,24 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog }) {
   });
 
   return (
-    <div className="card">
-      <h3 className="card-title">Sınav ve Soru Bankası</h3>
+    <div className="bg-white p-6 rounded-2xl border border-border shadow-sm hover:shadow-md transition-all duration-200">
+      <h3 className="font-display m-0 mb-4 text-base font-bold text-p flex items-center gap-2 tracking-tight">Sınav ve Soru Bankası</h3>
 
-      <div className="excel-box">
-        <button className="btn btn-secondary btn-sm" onClick={downloadTemplate}>
+      <div className="flex items-center gap-4 bg-slate-50/50 border border-dashed border-border p-4 rounded-xl mb-5">
+        <button className="px-2.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 cursor-pointer transition-all flex items-center gap-1.5" onClick={downloadTemplate}>
           <Download size={14} /> Soru Şablonu İndir
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Upload size={14} style={{ color: 'var(--text-muted)' }} />
-          <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} />
+        <div className="flex items-center gap-2">
+          <Upload size={14} className="text-text-muted" />
+          <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} className="border-none p-0 bg-transparent text-xs text-text-muted font-medium w-auto cursor-pointer" />
         </div>
       </div>
 
-      <div className="btn-group" style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', width: '100%' }}>
+      <div className="flex items-center gap-2 flex-wrap mb-4 w-full">
         {['Vize', 'Final', 'Bütünleme', 'Ödev', 'Uygulama', 'Tümü'].map((filter) => (
           <button
             key={filter}
-            className={`btn btn-sm ${activeFilter === filter ? 'btn-primary' : 'btn-secondary'}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all ${activeFilter === filter ? 'bg-s text-white shadow-md shadow-s/10' : 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-700'}`}
             onClick={() => {
               setActiveFilter(filter);
               addLog(`Soru bankası ${filter} için filtrelendi.`);
@@ -375,74 +384,74 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog }) {
           </button>
         ))}
         
-        <button className="btn btn-success btn-sm" style={{ marginLeft: 'auto' }} onClick={handleAddSoru} disabled={!currentDersId}>
+        <button className="px-3 py-1.5 bg-success hover:opacity-90 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-md shadow-success/10 ml-auto disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleAddSoru} disabled={!currentDersId}>
           <Plus size={12} /> Soru Ekle
         </button>
       </div>
 
       {!currentDersId ? (
-        <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
+        <div className="text-center p-8 text-text-muted border border-dashed border-border rounded-xl text-sm font-medium">
           Lütfen üst menüden bir Ders seçiniz.
         </div>
       ) : loading ? (
-        <div style={{ textAlign: 'center', padding: '20px' }}>Yükleniyor...</div>
+        <div className="text-center p-8 text-text-muted text-sm font-medium">Yükleniyor...</div>
       ) : filteredQuestions.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)', border: '1px dashed var(--border)', borderRadius: '8px' }}>
+        <div className="text-center p-8 text-text-muted border border-dashed border-border rounded-xl text-sm font-medium">
           Bu kategoride soru bulunamadı. "Soru Ekle" veya "Soru Şablonu" ile Excel'den içe aktarabilirsiniz.
         </div>
       ) : (
-        <div className="table-container" ref={dropdownRef}>
-          <table>
+        <div className="overflow-x-auto border border-border rounded-xl bg-white mt-4" ref={dropdownRef}>
+          <table className="w-full border-collapse text-left">
             <thead>
-              <tr>
-                <th style={{ width: '60px' }}>Kod</th>
-                <th>Soru Metni</th>
-                <th style={{ width: '90px' }}>Sınav</th>
-                <th style={{ width: '130px' }}>Tür</th>
-                <th style={{ width: '120px' }}>Kazanım (DÇ)</th>
-                <th style={{ width: '100px', textAlign: 'center' }}>İlişkili PÇ</th>
-                <th style={{ width: '70px', textAlign: 'center' }}>Puan</th>
-                <th style={{ width: '100px', textAlign: 'center' }}>Anahtar</th>
-                <th style={{ width: '70px', textAlign: 'center' }}>İşlem</th>
+              <tr className="border-b border-border bg-slate-50/50">
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[80px] text-center">Kod</th>
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider">Soru Metni</th>
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[100px]">Sınav</th>
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[130px]">Tür</th>
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[140px]">Kazanım (DÇ)</th>
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[100px] text-center">İlişkili PÇ</th>
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[80px] text-center">Puan</th>
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[110px] text-center">Anahtar</th>
+                <th className="px-3 py-3 text-xs font-bold text-text-muted uppercase tracking-wider w-[80px] text-center">İşlem</th>
               </tr>
             </thead>
             <tbody>
               {filteredQuestions.map((s) => {
                 const selectedDCs = (s.dc_code || '').split(', ').filter(Boolean);
                 return (
-                  <tr key={s.id}>
-                    <td>
+                  <tr key={s.id} className="border-b border-border last:border-0 hover:bg-slate-50/20">
+                    <td className="px-3 py-2 text-center">
                       <input
-                        style={{ padding: '4px 6px', textAlign: 'center', fontWeight: 'bold' }}
                         defaultValue={s.code}
                         onBlur={(e) => {
                           if (e.target.value !== s.code) {
                             handleUpdate(s.id, 'code', e.target.value);
                           }
                         }}
+                        className="w-full px-2 py-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 text-center font-bold"
                       />
                     </td>
-                    <td>
+                    <td className="px-3 py-2">
                       <textarea
-                        style={{ width: '100%', minHeight: '34px', fontSize: '0.8rem', padding: '6px', resize: 'vertical' }}
                         defaultValue={s.description || ''}
                         onBlur={(e) => {
                           if (e.target.value !== s.description) {
                             handleUpdate(s.id, 'description', e.target.value);
                           }
                         }}
+                        className="w-full px-2.5 py-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 min-h-[36px] resize-y"
                       />
                     </td>
-                    <td>
-                      <span className="btn btn-secondary btn-sm" style={{ padding: '2px 6px', fontSize: '0.7rem', background: '#f1f5f9' }}>
+                    <td className="px-3 py-2">
+                      <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
                         {s.exam_type}
                       </span>
                     </td>
-                    <td>
+                    <td className="px-3 py-2">
                       <select
                         value={s.question_type || 'Klasik'}
                         onChange={(e) => handleUpdate(s.id, 'question_type', e.target.value)}
-                        style={{ padding: '4px' }}
+                        className="w-full p-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200"
                       >
                         <option value="Klasik">Klasik</option>
                         <option value="Çoktan Seçmeli">Çoktan Seçmeli</option>
@@ -450,29 +459,30 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog }) {
                         <option value="Boşluk Doldurma">Boşluk Doldurma</option>
                       </select>
                     </td>
-                    <td>
+                    <td className="px-3 py-2">
                       {/* Custom React Multiselect Dropdown */}
-                      <div className={`dc-dropdown ${activeDropdownId === s.id ? 'active' : ''}`}>
+                      <div className="relative w-[130px]">
                         <div 
-                          className="dc-dropdown-btn" 
+                          className="bg-white border border-border px-2.5 py-1.5 rounded-lg cursor-pointer text-xs flex justify-between items-center min-h-[34px] hover:border-slate-300 transition-colors"
                           onClick={() => setActiveDropdownId(activeDropdownId === s.id ? null : s.id)}
                         >
-                          <span style={{ display: 'flex', gap: '2px', flexWrap: 'wrap', overflow: 'hidden' }}>
+                          <span className="flex gap-1 flex-wrap overflow-hidden">
                             {selectedDCs.length > 0 ? (
-                              selectedDCs.map(c => <span key={c} className="dc-tag">{c}</span>)
+                              selectedDCs.map(c => <span key={c} className="bg-s text-white px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wide">{c}</span>)
                             ) : (
-                              <span style={{ color: 'var(--text-muted)' }}>Seçiniz</span>
+                              <span className="text-text-muted">Seçiniz</span>
                             )}
                           </span>
-                          <ChevronDown size={10} />
+                          <ChevronDown size={10} className="text-slate-400" />
                         </div>
-                        <div className="dc-dropdown-content">
+                        <div className={`absolute bg-white min-w-[150px] shadow-xl z-[1000] p-2 rounded-xl max-h-[180px] overflow-y-auto border border-border right-0 top-full mt-1.5 transition-all ${activeDropdownId === s.id ? 'block' : 'hidden'}`}>
                           {dcs.map(dc => (
-                            <label key={dc.id} className="dc-option">
+                            <label key={dc.id} className="flex items-center gap-2 px-2 py-1.5 cursor-pointer text-xs rounded-md hover:bg-slate-50 transition-colors">
                               <input 
                                 type="checkbox" 
                                 checked={selectedDCs.includes(dc.code)} 
                                 onChange={(e) => handleUpdateMultiDC(s.id, dc.code, e.target.checked)}
+                                className="w-auto h-auto cursor-pointer"
                               />
                               {dc.code}
                             </label>
@@ -480,15 +490,14 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog }) {
                         </div>
                       </div>
                     </td>
-                    <td style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--s)', fontWeight: 'bold' }}>
+                    <td className="px-3 py-2 text-center text-xs text-s font-bold">
                       {getRelatedPCs(s.dc_code)}
                     </td>
-                    <td>
+                    <td className="px-3 py-2">
                       <input
                         type="number"
                         min="1"
                         max="100"
-                        style={{ textAlign: 'center', padding: '4px' }}
                         defaultValue={s.max_score}
                         onBlur={(e) => {
                           const val = parseFloat(e.target.value);
@@ -496,14 +505,15 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog }) {
                             handleUpdate(s.id, 'max_score', val);
                           }
                         }}
+                        className="w-14 text-center px-1.5 py-1 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 font-bold mx-auto block"
                       />
                     </td>
-                    <td>
+                    <td className="px-3 py-2">
                       {s.question_type === 'Çoktan Seçmeli' ? (
                         <select
                           value={s.answer_key || ''}
                           onChange={(e) => handleUpdate(s.id, 'answer_key', e.target.value)}
-                          style={{ padding: '4px' }}
+                          className="w-full p-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200"
                         >
                           <option value="">Seçiniz</option>
                           <option value="A">A</option>
@@ -516,7 +526,7 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog }) {
                         <select
                           value={s.answer_key || ''}
                           onChange={(e) => handleUpdate(s.id, 'answer_key', e.target.value)}
-                          style={{ padding: '4px' }}
+                          className="w-full p-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200"
                         >
                           <option value="">Seç</option>
                           <option value="Doğru">Doğru</option>
@@ -524,19 +534,19 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog }) {
                         </select>
                       ) : (
                         <input
-                          style={{ padding: '4px', textAlign: 'center' }}
-                          placeholder="Cevap Anahtarı"
+                          placeholder="Cevap"
                           defaultValue={s.answer_key || ''}
                           onBlur={(e) => {
                             if (e.target.value !== s.answer_key) {
                               handleUpdate(s.id, 'answer_key', e.target.value);
                             }
                           }}
+                          className="w-full px-2 py-1.5 border border-border rounded-lg text-xs bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 text-center"
                         />
                       )}
                     </td>
-                    <td style={{ textAlign: 'center' }}>
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(s.id)}>
+                    <td className="px-3 py-2 text-center">
+                      <button className="px-2 py-1.5 bg-danger hover:opacity-90 text-white rounded-md text-[11px] font-semibold cursor-pointer transition-all flex items-center gap-1 shadow-sm shadow-danger/10 mx-auto" onClick={() => handleDelete(s.id)}>
                         <Trash2 size={12} />
                       </button>
                     </td>
