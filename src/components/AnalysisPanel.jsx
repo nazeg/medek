@@ -935,19 +935,19 @@ export default function AnalysisPanel({ currentProgId, currentDersId, addLog, tr
                             <td className="px-3 py-3 text-center text-red-700">
                               {analysisResult.getBloomSymbol(analysisResult.zorPct, 20)} {analysisResult.zorPct.toFixed(0)}%
                               <span className="text-[10px] text-text-muted font-normal ml-1">
-                                ({analysisResult.zor.length} / {totalSoru})
+                                ({analysisResult.zor.length} / {analysisResult.soruStats.length})
                               </span>
                             </td>
                             <td className="px-3 py-3 text-center text-amber-700">
                               {analysisResult.getBloomSymbol(analysisResult.ortaPct, 60)} {analysisResult.ortaPct.toFixed(0)}%
                               <span className="text-[10px] text-text-muted font-normal ml-1">
-                                ({analysisResult.orta.length} / {totalSoru})
+                                ({analysisResult.orta.length} / {analysisResult.soruStats.length})
                               </span>
                             </td>
                             <td className="px-3 py-3 text-center text-green-700">
                               {analysisResult.getBloomSymbol(analysisResult.kolayPct, 20)} {analysisResult.kolayPct.toFixed(0)}%
                               <span className="text-[10px] text-text-muted font-normal ml-1">
-                                ({analysisResult.kolay.length} / {totalSoru})
+                                ({analysisResult.kolay.length} / {analysisResult.soruStats.length})
                               </span>
                             </td>
                           </tr>

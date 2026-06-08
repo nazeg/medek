@@ -273,16 +273,6 @@ export default function App() {
           ))}
         </div>
 
-        {/* Logs Terminal */}
-        <div className="bg-[#050b11] h-[130px] border-t border-white/10 p-3.5 font-mono text-[9px] text-green-400 overflow-y-auto flex flex-col gap-0.5 select-none">
-          <div className="flex items-center gap-1.5 border-b border-white/5 pb-1 mb-1 font-bold text-slate-400">
-            <Terminal size={12} /> <span>Konsol Çıktısı</span>
-          </div>
-          {logs.map((log, idx) => (
-            <div key={idx} className="line-clamp-1 break-all opacity-85">{log}</div>
-          ))}
-        </div>
-
         {/* Footer */}
         <div className="p-4 border-t border-white/10 bg-black/15">
           <div className="flex items-center justify-between text-[11px] text-slate-300">
