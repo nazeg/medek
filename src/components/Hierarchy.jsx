@@ -245,91 +245,80 @@ export default function Hierarchy({
   return (
     <>
       {/* Dynamic Selector Bar */}
-      <div className="flex gap-6 items-start bg-s-light/60 border-l-4 border-s p-6 rounded-2xl shadow-sm">
-        <div className="flex-1 min-w-0">
-          <label className="flex items-center gap-1.5 text-xs font-bold text-text-muted uppercase tracking-wider">
-            <University size={14} /> AKTİF PROGRAM
-          </label>
-          <select
-            value={currentProgId || ''}
-            onChange={(e) => {
-              setCurrentProgId(e.target.value);
-              setCurrentDersId(null);
-            }}
-            disabled={progLocked}
-            className="w-full mt-2 p-2.5 border border-border rounded-xl text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
-          >
-            <option value="">Seçiniz</option>
-            {programs.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-          </select>
-          <div className="flex gap-2.5 mt-2.5 items-center">
-            <button className="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 cursor-pointer transition-all flex items-center gap-1" onClick={handleEditProgram} disabled={!currentProgId}><Edit size={10} /> Düzenle</button>
-            <button className="px-2.5 py-1 bg-danger hover:opacity-90 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1 shadow-sm shadow-danger/10" onClick={handleDeleteProgram} disabled={!currentProgId}><Trash2 size={10} /> Sil</button>
-            <label className="text-[10px] flex items-center gap-1.5 cursor-pointer select-none text-text-muted hover:text-slate-800 transition-colors ml-2">
-              <input type="checkbox" checked={progLocked} onChange={(e) => setProgLocked(e.target.checked)} className="w-auto h-auto cursor-pointer" />
-              {progLocked ? <Lock size={10} /> : <Unlock size={10} />} Kilitle
-            </label>
+      <div className="flex flex-col gap-3 bg-s-light/60 border-l-4 border-s p-5 rounded-2xl shadow-sm">
+        {/* Row 1: Program */}
+        <div className="flex items-center gap-3">
+          <University size={16} className="text-s shrink-0" />
+          <div className="flex-1 min-w-0">
+            <select
+              value={currentProgId || ''}
+              onChange={(e) => { setCurrentProgId(e.target.value); setCurrentDersId(null); }}
+              disabled={progLocked}
+              className="w-full p-2 border border-border rounded-lg text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
+            >
+              <option value="">Program Seçiniz</option>
+              {programs.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
           </div>
+          <button className="p-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-600 cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed" onClick={handleEditProgram} disabled={!currentProgId} title="Düzenle"><Edit size={14} /></button>
+          <button className="p-1.5 bg-white hover:bg-red-50 border border-slate-200 rounded-lg text-danger cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed" onClick={handleDeleteProgram} disabled={!currentProgId} title="Sil"><Trash2 size={14} /></button>
+          <label className="flex items-center gap-1 text-[10px] text-text-muted cursor-pointer select-none hover:text-slate-700 transition-colors whitespace-nowrap">
+            <input type="checkbox" checked={progLocked} onChange={(e) => setProgLocked(e.target.checked)} className="w-3 h-3 cursor-pointer" />
+            {progLocked ? <Lock size={11} /> : <Unlock size={11} />}
+          </label>
         </div>
 
-        <div className="flex-1 min-w-0">
-          <label className="flex items-center gap-1.5 text-xs font-bold text-text-muted uppercase tracking-wider">
-            <Calendar size={14} /> EĞİTİM YILI / DÖNEM
-          </label>
-          <select
-            value={currentTermId || ''}
-            onChange={(e) => {
-              setCurrentTermId(e.target.value);
-              setCurrentDersId(null);
-            }}
-            disabled={termLocked}
-            className="w-full mt-2 p-2.5 border border-border rounded-xl text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
-          >
-            <option value="">Seçiniz</option>
-            {terms.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-          </select>
-          <div className="flex gap-2.5 mt-2.5 items-center">
-            <button className="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 cursor-pointer transition-all flex items-center gap-1" onClick={handleEditTerm} disabled={!currentTermId}><Edit size={10} /> Düzenle</button>
-            <button className="px-2.5 py-1 bg-danger hover:opacity-90 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1 shadow-sm shadow-danger/10" onClick={handleDeleteTerm} disabled={!currentTermId}><Trash2 size={10} /> Sil</button>
-            <label className="text-[10px] flex items-center gap-1.5 cursor-pointer select-none text-text-muted hover:text-slate-800 transition-colors ml-2">
-              <input type="checkbox" checked={termLocked} onChange={(e) => setTermLocked(e.target.checked)} className="w-auto h-auto cursor-pointer" />
-              {termLocked ? <Lock size={10} /> : <Unlock size={10} />} Kilitle
-            </label>
+        {/* Row 2: Dönem */}
+        <div className="flex items-center gap-3">
+          <Calendar size={16} className="text-warning shrink-0" />
+          <div className="flex-1 min-w-0">
+            <select
+              value={currentTermId || ''}
+              onChange={(e) => { setCurrentTermId(e.target.value); setCurrentDersId(null); }}
+              disabled={termLocked}
+              className="w-full p-2 border border-border rounded-lg text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
+            >
+              <option value="">Dönem Seçiniz</option>
+              {terms.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
           </div>
+          <button className="p-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-600 cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed" onClick={handleEditTerm} disabled={!currentTermId} title="Düzenle"><Edit size={14} /></button>
+          <button className="p-1.5 bg-white hover:bg-red-50 border border-slate-200 rounded-lg text-danger cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed" onClick={handleDeleteTerm} disabled={!currentTermId} title="Sil"><Trash2 size={14} /></button>
+          <label className="flex items-center gap-1 text-[10px] text-text-muted cursor-pointer select-none hover:text-slate-700 transition-colors whitespace-nowrap">
+            <input type="checkbox" checked={termLocked} onChange={(e) => setTermLocked(e.target.checked)} className="w-3 h-3 cursor-pointer" />
+            {termLocked ? <Lock size={11} /> : <Unlock size={11} />}
+          </label>
         </div>
 
-        <div className="flex-1 min-w-0">
-          <label className="flex items-center gap-1.5 text-xs font-bold text-text-muted uppercase tracking-wider">
-            <BookOpen size={14} /> AKTİF DERS
-          </label>
-          <select
-            value={currentDersId || ''}
-            onChange={(e) => setCurrentDersId(e.target.value)}
-            disabled={dersLocked || !currentProgId || !currentTermId}
-            className="w-full mt-2 p-2.5 border border-border rounded-xl text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
-          >
-            <option value="">Seçiniz</option>
-            {courses
-              .filter(c => c.program_id === currentProgId && c.term_id === currentTermId)
-              .map(d => <option key={d.id} value={d.id}>{d.code ? `${d.code} - ` : ''}{d.name}</option>)}
-          </select>
-          <div className="flex gap-2.5 mt-2.5 items-center">
-            <button className="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 cursor-pointer transition-all flex items-center gap-1" onClick={() => {
-              const activeD = courses.find(c => c.id === currentDersId);
-              handleOpenCourseModal(activeD);
-            }} disabled={!currentDersId}><Edit size={10} /> Düzenle</button>
-            <button className="px-2.5 py-1 bg-danger hover:opacity-90 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1 shadow-sm shadow-danger/10" onClick={handleDeleteCourse} disabled={!currentDersId}><Trash2 size={10} /> Sil</button>
-            <label className="text-[10px] flex items-center gap-1.5 cursor-pointer select-none text-text-muted hover:text-slate-800 transition-colors ml-2">
-              <input type="checkbox" checked={dersLocked} onChange={(e) => setDersLocked(e.target.checked)} className="w-auto h-auto cursor-pointer" />
-              {dersLocked ? <Lock size={10} /> : <Unlock size={10} />} Kilitle
-            </label>
+        {/* Row 3: Ders */}
+        <div className="flex items-center gap-3">
+          <BookOpen size={16} className="text-success shrink-0" />
+          <div className="flex-1 min-w-0">
+            <select
+              value={currentDersId || ''}
+              onChange={(e) => setCurrentDersId(e.target.value)}
+              disabled={dersLocked || !currentProgId || !currentTermId}
+              className="w-full p-2 border border-border rounded-lg text-sm bg-white focus:border-s focus:outline-none focus:ring-4 focus:ring-s/15 transition-all duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
+            >
+              <option value="">Ders Seçiniz</option>
+              {courses
+                .filter(c => c.program_id === currentProgId && c.term_id === currentTermId)
+                .map(d => <option key={d.id} value={d.id}>{d.code ? `${d.code} - ` : ''}{d.name}</option>)}
+            </select>
           </div>
+          <button className="p-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-600 cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed" onClick={() => { const d = courses.find(c => c.id === currentDersId); handleOpenCourseModal(d); }} disabled={!currentDersId} title="Düzenle"><Edit size={14} /></button>
+          <button className="p-1.5 bg-white hover:bg-red-50 border border-slate-200 rounded-lg text-danger cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed" onClick={handleDeleteCourse} disabled={!currentDersId} title="Sil"><Trash2 size={14} /></button>
+          <label className="flex items-center gap-1 text-[10px] text-text-muted cursor-pointer select-none hover:text-slate-700 transition-colors whitespace-nowrap">
+            <input type="checkbox" checked={dersLocked} onChange={(e) => setDersLocked(e.target.checked)} className="w-3 h-3 cursor-pointer" />
+            {dersLocked ? <Lock size={11} /> : <Unlock size={11} />}
+          </label>
         </div>
 
-        <div className="flex flex-col gap-2 self-center shrink-0">
-          <button className="px-3 py-1.5 bg-s hover:bg-p-hover text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-md shadow-s/10" onClick={handleAddProgram}><Plus size={12} /> Program Ekle</button>
-          <button className="px-3 py-1.5 bg-warning hover:opacity-90 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-md shadow-warning/10" onClick={handleAddTerm}><Plus size={12} /> Dönem Ekle</button>
-          <button className="px-3 py-1.5 bg-success hover:opacity-90 text-white rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-md shadow-success/10 disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => handleOpenCourseModal(null)} disabled={!currentProgId || !currentTermId}><Plus size={12} /> Ders Ekle</button>
+        {/* Row 4: Action buttons */}
+        <div className="flex gap-2 pt-2.5 border-t border-slate-200/60 mt-0.5">
+          <button className="px-3 py-1.5 bg-s hover:bg-p-hover text-white rounded-lg text-[11px] font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-sm" onClick={handleAddProgram}><Plus size={12} /> Program</button>
+          <button className="px-3 py-1.5 bg-warning hover:opacity-90 text-white rounded-lg text-[11px] font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-sm" onClick={handleAddTerm}><Plus size={12} /> Dönem</button>
+          <button className="px-3 py-1.5 bg-success hover:opacity-90 text-white rounded-lg text-[11px] font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => handleOpenCourseModal(null)} disabled={!currentProgId || !currentTermId}><Plus size={12} /> Ders</button>
         </div>
       </div>
 
