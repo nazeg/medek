@@ -7,6 +7,7 @@ const pbUrl = window.location.hostname === 'localhost' || window.location.hostna
   : window.location.origin;
 
 export const pb = new PocketBase(pbUrl);
+pb.autoCancellation(false);
 
 // Authentication helper
 export const isUserLoggedIn = () => pb.authStore.isValid;
