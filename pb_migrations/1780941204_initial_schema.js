@@ -1,499 +1,181 @@
 /// <reference path="../pb_data/types.d.ts" />
 migrate((app) => {
-  const collections = [
-  {
-    "id": "_pb_users_auth_",
-    "name": "users",
-    "type": "auth",
-    "system": false,
-    "fields": [
-      {
-        "id": "users_name",
-        "name": "name",
-        "type": "text",
-        "required": false,
-        "presentable": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "users_avatar",
-        "name": "avatar",
-        "type": "file",
-        "required": false,
-        "presentable": false,
-        "options": {
-          "mimeTypes": [
-            "image/jpeg",
-            "image/png",
-            "image/svg+xml",
-            "image/gif",
-            "image/webp"
-          ],
-          "thumbs": null,
-          "maxSelect": 1,
-          "maxSize": 5242880,
-          "protected": false
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": "id = @request.auth.id",
-    "viewRule": "id = @request.auth.id",
-    "createRule": "",
-    "updateRule": "id = @request.auth.id",
-    "deleteRule": "id = @request.auth.id",
-    "options": {
-      "allowEmailAuth": true,
-      "allowOAuth2Auth": true,
-      "allowUsernameAuth": true,
-      "exceptEmailDomains": null,
-      "manageRule": null,
-      "minPasswordLength": 8,
-      "onlyEmailDomains": null,
-      "onlyVerified": false,
-      "requireEmail": false
+  // Extend users auth collection
+  const users = app.findCollectionByNameOrId("_pb_users_auth_")
+  if (users) {
+    let changed = false
+    if (!users.fields.getByName("name")) {
+      users.fields.add(new TextField({ name: "name" }))
+      changed = true
     }
-  },
-  {
-    "id": "programs_coll00",
-    "name": "programs",
-    "type": "base",
-    "system": false,
-    "fields": [
-      {
-        "id": "prg_name_field",
-        "name": "name",
-        "type": "text",
-        "required": true,
-        "presentable": true,
-        "options": {}
-      }
-    ],
-    "indexes": [],
-    "listRule": "@request.auth.id != \"\"",
-    "viewRule": "@request.auth.id != \"\"",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id != \"\"",
-    "deleteRule": "@request.auth.id != \"\"",
-    "options": {}
-  },
-  {
-    "id": "terms_coll00000",
-    "name": "terms",
-    "type": "base",
-    "system": false,
-    "fields": [
-      {
-        "id": "trm_name_field",
-        "name": "name",
-        "type": "text",
-        "required": true,
-        "presentable": true,
-        "options": {}
-      }
-    ],
-    "indexes": [],
-    "listRule": "@request.auth.id != \"\"",
-    "viewRule": "@request.auth.id != \"\"",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id != \"\"",
-    "deleteRule": "@request.auth.id != \"\"",
-    "options": {}
-  },
-  {
-    "id": "courses_coll000",
-    "name": "courses",
-    "type": "base",
-    "system": false,
-    "fields": [
-      {
-        "id": "crs_prog_id_fld",
-        "name": "program_id",
-        "type": "relation",
-        "required": true,
-        "options": {
-          "collectionId": "programs_coll00",
-          "cascadeDelete": true,
-          "maxSelect": 1
-        }
-      },
-      {
-        "id": "crs_term_id_fld",
-        "name": "term_id",
-        "type": "relation",
-        "required": true,
-        "options": {
-          "collectionId": "terms_coll00000",
-          "cascadeDelete": true,
-          "maxSelect": 1
-        }
-      },
-      {
-        "id": "crs_code_field",
-        "name": "code",
-        "type": "text",
-        "required": true,
-        "options": {}
-      },
-      {
-        "id": "crs_name_field",
-        "name": "name",
-        "type": "text",
-        "required": true,
-        "presentable": true,
-        "options": {}
-      },
-      {
-        "id": "crs_akts_field",
-        "name": "akts",
-        "type": "number",
-        "options": {}
-      },
-      {
-        "id": "crs_instructor",
-        "name": "instructor",
-        "type": "text",
-        "options": {}
-      },
-      {
-        "id": "crs_grade_level",
-        "name": "grade_level",
-        "type": "text",
-        "options": {}
-      },
-      {
-        "id": "crs_pct_vize_f",
-        "name": "pct_vize",
-        "type": "number",
-        "options": {}
-      },
-      {
-        "id": "crs_pct_odev_f",
-        "name": "pct_odev",
-        "type": "number",
-        "options": {}
-      },
-      {
-        "id": "crs_pct_uyg_fl",
-        "name": "pct_uygulama",
-        "type": "number",
-        "options": {}
-      },
-      {
-        "id": "crs_pct_finalf",
-        "name": "pct_final",
-        "type": "number",
-        "options": {}
-      },
-      {
-        "id": "crs_pct_but_fl",
-        "name": "pct_but",
-        "type": "number",
-        "options": {}
-      }
-    ],
-    "indexes": [
-      "CREATE INDEX idx_courses_program_term ON courses (program_id, term_id)"
-    ],
-    "listRule": "@request.auth.id != \"\"",
-    "viewRule": "@request.auth.id != \"\"",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id != \"\"",
-    "deleteRule": "@request.auth.id != \"\"",
-    "options": {}
-  },
-  {
-    "id": "prog_outcomes_c",
-    "name": "program_outcomes",
-    "type": "base",
-    "system": false,
-    "fields": [
-      {
-        "id": "po_prog_id_fld",
-        "name": "program_id",
-        "type": "relation",
-        "required": true,
-        "options": {
-          "collectionId": "programs_coll00",
-          "cascadeDelete": true,
-          "maxSelect": 1
-        }
-      },
-      {
-        "id": "po_code_field",
-        "name": "code",
-        "type": "text",
-        "required": true,
-        "options": {}
-      },
-      {
-        "id": "po_desc_field",
-        "name": "description",
-        "type": "text",
-        "options": {}
-      }
-    ],
-    "indexes": [],
-    "listRule": "@request.auth.id != \"\"",
-    "viewRule": "@request.auth.id != \"\"",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id != \"\"",
-    "deleteRule": "@request.auth.id != \"\"",
-    "options": {}
-  },
-  {
-    "id": "cour_outcomes_c",
-    "name": "course_outcomes",
-    "type": "base",
-    "system": false,
-    "fields": [
-      {
-        "id": "co_course_id_f",
-        "name": "course_id",
-        "type": "relation",
-        "required": true,
-        "options": {
-          "collectionId": "courses_coll000",
-          "cascadeDelete": true,
-          "maxSelect": 1
-        }
-      },
-      {
-        "id": "co_code_field",
-        "name": "code",
-        "type": "text",
-        "required": true,
-        "options": {}
-      },
-      {
-        "id": "co_desc_field",
-        "name": "description",
-        "type": "text",
-        "options": {}
-      }
-    ],
-    "indexes": [],
-    "listRule": "@request.auth.id != \"\"",
-    "viewRule": "@request.auth.id != \"\"",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id != \"\"",
-    "deleteRule": "@request.auth.id != \"\"",
-    "options": {}
-  },
-  {
-    "id": "matrix_coll0000",
-    "name": "matrix",
-    "type": "base",
-    "system": false,
-    "fields": [
-      {
-        "id": "mat_course_id_",
-        "name": "course_id",
-        "type": "relation",
-        "required": true,
-        "options": {
-          "collectionId": "courses_coll000",
-          "cascadeDelete": true,
-          "maxSelect": 1
-        }
-      },
-      {
-        "id": "mat_dc_code_fl",
-        "name": "dc_code",
-        "type": "text",
-        "required": true,
-        "options": {}
-      },
-      {
-        "id": "mat_pc_code_fl",
-        "name": "pc_code",
-        "type": "text",
-        "required": true,
-        "options": {}
-      },
-      {
-        "id": "mat_value_field",
-        "name": "value",
-        "type": "number",
-        "options": {}
-      }
-    ],
-    "indexes": [
-      "CREATE UNIQUE INDEX idx_matrix_course_dc_pc ON matrix (course_id, dc_code, pc_code)"
-    ],
-    "listRule": "@request.auth.id != \"\"",
-    "viewRule": "@request.auth.id != \"\"",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id != \"\"",
-    "deleteRule": "@request.auth.id != \"\"",
-    "options": {}
-  },
-  {
-    "id": "questions_coll",
-    "name": "questions",
-    "type": "base",
-    "system": false,
-    "fields": [
-      {
-        "id": "q_course_id_fl",
-        "name": "course_id",
-        "type": "relation",
-        "required": true,
-        "options": {
-          "collectionId": "courses_coll000",
-          "cascadeDelete": true,
-          "maxSelect": 1
-        }
-      },
-      {
-        "id": "q_code_field",
-        "name": "code",
-        "type": "text",
-        "required": true,
-        "options": {}
-      },
-      {
-        "id": "q_desc_field",
-        "name": "description",
-        "type": "text",
-        "options": {}
-      },
-      {
-        "id": "q_exam_type_fl",
-        "name": "exam_type",
-        "type": "text",
-        "required": true,
-        "options": {}
-      },
-      {
-        "id": "q_q_type_field",
-        "name": "question_type",
-        "type": "text",
-        "required": true,
-        "options": {}
-      },
-      {
-        "id": "q_dc_code_field",
-        "name": "dc_code",
-        "type": "text",
-        "options": {}
-      },
-      {
-        "id": "q_max_score_fl",
-        "name": "max_score",
-        "type": "number",
-        "options": {}
-      },
-      {
-        "id": "q_answer_key_f",
-        "name": "answer_key",
-        "type": "text",
-        "options": {}
-      }
-    ],
-    "indexes": [],
-    "listRule": "@request.auth.id != \"\"",
-    "viewRule": "@request.auth.id != \"\"",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id != \"\"",
-    "deleteRule": "@request.auth.id != \"\"",
-    "options": {}
-  },
-  {
-    "id": "students_coll0",
-    "name": "students",
-    "type": "base",
-    "system": false,
-    "fields": [
-      {
-        "id": "s_course_id_fl",
-        "name": "course_id",
-        "type": "relation",
-        "required": true,
-        "options": {
-          "collectionId": "courses_coll000",
-          "cascadeDelete": true,
-          "maxSelect": 1
-        }
-      },
-      {
-        "id": "s_student_no_f",
-        "name": "student_no",
-        "type": "text",
-        "required": true,
-        "options": {}
-      },
-      {
-        "id": "s_full_name_fl",
-        "name": "full_name",
-        "type": "text",
-        "required": true,
-        "options": {}
-      }
-    ],
-    "indexes": [
-      "CREATE UNIQUE INDEX idx_student_course_no ON students (course_id, student_no)"
-    ],
-    "listRule": "@request.auth.id != \"\"",
-    "viewRule": "@request.auth.id != \"\"",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id != \"\"",
-    "deleteRule": "@request.auth.id != \"\"",
-    "options": {}
-  },
-  {
-    "id": "stud_grades_co",
-    "name": "student_grades",
-    "type": "base",
-    "system": false,
-    "fields": [
-      {
-        "id": "g_student_id_f",
-        "name": "student_id",
-        "type": "relation",
-        "required": true,
-        "options": {
-          "collectionId": "students_coll0",
-          "cascadeDelete": true,
-          "maxSelect": 1
-        }
-      },
-      {
-        "id": "g_question_id_",
-        "name": "question_id",
-        "type": "relation",
-        "required": true,
-        "options": {
-          "collectionId": "questions_coll",
-          "cascadeDelete": true,
-          "maxSelect": 1
-        }
-      },
-      {
-        "id": "g_score_field",
-        "name": "score",
-        "type": "number",
-        "options": {}
-      }
-    ],
-    "indexes": [
-      "CREATE UNIQUE INDEX idx_grade_student_question ON student_grades (student_id, question_id)"
-    ],
-    "listRule": "@request.auth.id != \"\"",
-    "viewRule": "@request.auth.id != \"\"",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id != \"\"",
-    "deleteRule": "@request.auth.id != \"\"",
-    "options": {}
+    if (!users.fields.getByName("avatar")) {
+      users.fields.add(new FileField({
+        name: "avatar",
+        mimeTypes: ["image/jpeg", "image/png", "image/svg+xml", "image/gif", "image/webp"],
+        maxSelect: 1,
+        maxSize: 5242880,
+      }))
+      changed = true
+    }
+    if (changed) app.save(users)
   }
-];
 
-  return app.importCollections(collections, false);
+  // Programs
+  let collection = new Collection({ type: "base", name: "programs" })
+  collection.fields.add(new TextField({ name: "name", required: true, presentable: true }))
+  collection.listRule = "@request.auth.id != \"\""
+  collection.viewRule = "@request.auth.id != \"\""
+  collection.createRule = "@request.auth.id != \"\""
+  collection.updateRule = "@request.auth.id != \"\""
+  collection.deleteRule = "@request.auth.id != \"\""
+  app.save(collection)
+  const programsId = collection.id
+
+  // Terms
+  collection = new Collection({ type: "base", name: "terms" })
+  collection.fields.add(new TextField({ name: "name", required: true, presentable: true }))
+  collection.listRule = "@request.auth.id != \"\""
+  collection.viewRule = "@request.auth.id != \"\""
+  collection.createRule = "@request.auth.id != \"\""
+  collection.updateRule = "@request.auth.id != \"\""
+  collection.deleteRule = "@request.auth.id != \"\""
+  app.save(collection)
+  const termsId = collection.id
+
+  // Courses
+  collection = new Collection({ type: "base", name: "courses" })
+  collection.fields.add(new RelationField({
+    name: "program_id", required: true,
+    collectionId: programsId, cascadeDelete: true, maxSelect: 1,
+  }))
+  collection.fields.add(new RelationField({
+    name: "term_id", required: true,
+    collectionId: termsId, cascadeDelete: true, maxSelect: 1,
+  }))
+  collection.fields.add(new TextField({ name: "code", required: true }))
+  collection.fields.add(new TextField({ name: "name", required: true, presentable: true }))
+  collection.fields.add(new NumberField({ name: "akts" }))
+  collection.fields.add(new TextField({ name: "instructor" }))
+  collection.fields.add(new TextField({ name: "grade_level" }))
+  collection.fields.add(new NumberField({ name: "pct_vize" }))
+  collection.fields.add(new NumberField({ name: "pct_odev" }))
+  collection.fields.add(new NumberField({ name: "pct_uygulama" }))
+  collection.fields.add(new NumberField({ name: "pct_final" }))
+  collection.fields.add(new NumberField({ name: "pct_but" }))
+  collection.indexes = ["CREATE INDEX idx_courses_program_term ON courses (program_id, term_id)"]
+  collection.listRule = "@request.auth.id != \"\""
+  collection.viewRule = "@request.auth.id != \"\""
+  collection.createRule = "@request.auth.id != \"\""
+  collection.updateRule = "@request.auth.id != \"\""
+  collection.deleteRule = "@request.auth.id != \"\""
+  app.save(collection)
+  const coursesId = collection.id
+
+  // Program outcomes
+  collection = new Collection({ type: "base", name: "program_outcomes" })
+  collection.fields.add(new RelationField({
+    name: "program_id", required: true,
+    collectionId: programsId, cascadeDelete: true, maxSelect: 1,
+  }))
+  collection.fields.add(new TextField({ name: "code", required: true }))
+  collection.fields.add(new TextField({ name: "description" }))
+  collection.listRule = "@request.auth.id != \"\""
+  collection.viewRule = "@request.auth.id != \"\""
+  collection.createRule = "@request.auth.id != \"\""
+  collection.updateRule = "@request.auth.id != \"\""
+  collection.deleteRule = "@request.auth.id != \"\""
+  app.save(collection)
+
+  // Course outcomes
+  collection = new Collection({ type: "base", name: "course_outcomes" })
+  collection.fields.add(new RelationField({
+    name: "course_id", required: true,
+    collectionId: coursesId, cascadeDelete: true, maxSelect: 1,
+  }))
+  collection.fields.add(new TextField({ name: "code", required: true }))
+  collection.fields.add(new TextField({ name: "description" }))
+  collection.listRule = "@request.auth.id != \"\""
+  collection.viewRule = "@request.auth.id != \"\""
+  collection.createRule = "@request.auth.id != \"\""
+  collection.updateRule = "@request.auth.id != \"\""
+  collection.deleteRule = "@request.auth.id != \"\""
+  app.save(collection)
+
+  // Matrix
+  collection = new Collection({ type: "base", name: "matrix" })
+  collection.fields.add(new RelationField({
+    name: "course_id", required: true,
+    collectionId: coursesId, cascadeDelete: true, maxSelect: 1,
+  }))
+  collection.fields.add(new TextField({ name: "dc_code", required: true }))
+  collection.fields.add(new TextField({ name: "pc_code", required: true }))
+  collection.fields.add(new NumberField({ name: "value" }))
+  collection.indexes = ["CREATE UNIQUE INDEX idx_matrix_course_dc_pc ON matrix (course_id, dc_code, pc_code)"]
+  collection.listRule = "@request.auth.id != \"\""
+  collection.viewRule = "@request.auth.id != \"\""
+  collection.createRule = "@request.auth.id != \"\""
+  collection.updateRule = "@request.auth.id != \"\""
+  collection.deleteRule = "@request.auth.id != \"\""
+  app.save(collection)
+
+  // Questions
+  collection = new Collection({ type: "base", name: "questions" })
+  collection.fields.add(new RelationField({
+    name: "course_id", required: true,
+    collectionId: coursesId, cascadeDelete: true, maxSelect: 1,
+  }))
+  collection.fields.add(new TextField({ name: "code", required: true }))
+  collection.fields.add(new TextField({ name: "description" }))
+  collection.fields.add(new TextField({ name: "exam_type", required: true }))
+  collection.fields.add(new TextField({ name: "question_type", required: true }))
+  collection.fields.add(new TextField({ name: "dc_code" }))
+  collection.fields.add(new NumberField({ name: "max_score" }))
+  collection.fields.add(new TextField({ name: "answer_key" }))
+  collection.listRule = "@request.auth.id != \"\""
+  collection.viewRule = "@request.auth.id != \"\""
+  collection.createRule = "@request.auth.id != \"\""
+  collection.updateRule = "@request.auth.id != \"\""
+  collection.deleteRule = "@request.auth.id != \"\""
+  app.save(collection)
+  const questionsId = collection.id
+
+  // Students
+  collection = new Collection({ type: "base", name: "students" })
+  collection.fields.add(new RelationField({
+    name: "course_id", required: true,
+    collectionId: coursesId, cascadeDelete: true, maxSelect: 1,
+  }))
+  collection.fields.add(new TextField({ name: "student_no", required: true }))
+  collection.fields.add(new TextField({ name: "full_name", required: true }))
+  collection.indexes = ["CREATE UNIQUE INDEX idx_student_course_no ON students (course_id, student_no)"]
+  collection.listRule = "@request.auth.id != \"\""
+  collection.viewRule = "@request.auth.id != \"\""
+  collection.createRule = "@request.auth.id != \"\""
+  collection.updateRule = "@request.auth.id != \"\""
+  collection.deleteRule = "@request.auth.id != \"\""
+  app.save(collection)
+  const studentsId = collection.id
+
+  // Student grades
+  collection = new Collection({ type: "base", name: "student_grades" })
+  collection.fields.add(new RelationField({
+    name: "student_id", required: true,
+    collectionId: studentsId, cascadeDelete: true, maxSelect: 1,
+  }))
+  collection.fields.add(new RelationField({
+    name: "question_id", required: true,
+    collectionId: questionsId, cascadeDelete: true, maxSelect: 1,
+  }))
+  collection.fields.add(new NumberField({ name: "score" }))
+  collection.indexes = ["CREATE UNIQUE INDEX idx_grade_student_question ON student_grades (student_id, question_id)"]
+  collection.listRule = "@request.auth.id != \"\""
+  collection.viewRule = "@request.auth.id != \"\""
+  collection.createRule = "@request.auth.id != \"\""
+  collection.updateRule = "@request.auth.id != \"\""
+  collection.deleteRule = "@request.auth.id != \"\""
+  app.save(collection)
+
+  return null
 }, (app) => {
-  // Down migration
-  return null;
-});
+  return null
+})
