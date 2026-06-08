@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { pb } from '../pb';
 import ExcelJS from 'exceljs';
 import * as XLSX from 'xlsx';
@@ -12,8 +13,23 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
   const [activeFilter, setActiveFilter] = useState('Tümü');
   const [loading, setLoading] = useState(false);
   const [activeDropdownId, setActiveDropdownId] = useState(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
 
+  const triggerRefs = useRef({});
   const dropdownRef = useRef(null);
+
+  const storeTriggerRef = useCallback((id, el) => {
+    if (el) triggerRefs.current[id] = el;
+  }, []);
+
+  const openDropdown = (id) => {
+    const el = triggerRefs.current[id];
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      setDropdownPos({ top: rect.bottom + 6, left: rect.left, width: rect.width });
+    }
+    setActiveDropdownId(prev => prev === id ? null : id);
+  };
 
   const fetchQuestionsAndOutcomes = async () => {
     if (!currentDersId) return;
@@ -62,7 +78,7 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [activeDropdownId]);
 
   const handleUpdate = async (id, field, val) => {
     // 1. If updating max_score, validate that total score for this exam doesn't exceed 100
@@ -400,7 +416,7 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
           Bu kategoride soru bulunamadı. "Soru Ekle" veya "Soru Şablonu" ile Excel'den içe aktarabilirsiniz.
         </div>
       ) : (
-        <div className="overflow-x-auto border border-border rounded-xl bg-white mt-4" ref={dropdownRef}>
+        <div className="overflow-x-auto border border-border rounded-xl bg-white mt-4">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="border-b border-border bg-slate-50/50">
@@ -463,8 +479,9 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
                       {/* Custom React Multiselect Dropdown */}
                       <div className="relative w-[130px]">
                         <div 
+                          ref={(el) => storeTriggerRef(s.id, el)}
                           className="bg-white border border-border px-2.5 py-1.5 rounded-lg cursor-pointer text-xs flex justify-between items-center min-h-[34px] hover:border-slate-300 transition-colors"
-                          onClick={() => setActiveDropdownId(activeDropdownId === s.id ? null : s.id)}
+                          onClick={() => openDropdown(s.id)}
                         >
                           <span className="flex gap-1 flex-wrap overflow-hidden">
                             {selectedDCs.length > 0 ? (
@@ -474,19 +491,6 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
                             )}
                           </span>
                           <ChevronDown size={10} className="text-slate-400" />
-                        </div>
-                        <div className={`absolute bg-white min-w-[150px] shadow-xl z-[1000] p-2 rounded-xl max-h-[180px] overflow-y-auto border border-border right-0 top-full mt-1.5 transition-all ${activeDropdownId === s.id ? 'block' : 'hidden'}`}>
-                          {dcs.map(dc => (
-                            <label key={dc.id} className="flex items-center gap-2 px-2 py-1.5 cursor-pointer text-xs rounded-md hover:bg-slate-50 transition-colors">
-                              <input 
-                                type="checkbox" 
-                                checked={selectedDCs.includes(dc.code)} 
-                                onChange={(e) => handleUpdateMultiDC(s.id, dc.code, e.target.checked)}
-                                className="w-auto h-auto cursor-pointer"
-                              />
-                              {dc.code}
-                            </label>
-                          ))}
                         </div>
                       </div>
                     </td>
@@ -556,6 +560,33 @@ export default function QuestionBank({ currentProgId, currentDersId, addLog, tri
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* Dropdown Portal - rendered at body level to avoid overflow clipping */}
+      {activeDropdownId && createPortal(
+        <div ref={dropdownRef}>
+          <div 
+            className="fixed z-[1000] bg-white min-w-[150px] shadow-xl p-2 rounded-xl max-h-[200px] overflow-y-auto border border-border"
+            style={{ top: dropdownPos.top, left: dropdownPos.left, width: Math.max(dropdownPos.width, 150) }}
+          >
+            {dcs.map(dc => {
+              const question = questions.find(q => q.id === activeDropdownId);
+              const selectedDCs = (question?.dc_code || '').split(', ').filter(Boolean);
+              return (
+                <label key={dc.id} className="flex items-center gap-2 px-2 py-1.5 cursor-pointer text-xs rounded-md hover:bg-slate-50 transition-colors">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedDCs.includes(dc.code)} 
+                    onChange={(e) => handleUpdateMultiDC(activeDropdownId, dc.code, e.target.checked)}
+                    className="w-auto h-auto cursor-pointer"
+                  />
+                  {dc.code}
+                </label>
+              );
+            })}
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
