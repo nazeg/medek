@@ -1,0 +1,396 @@
+[
+  {
+    "id": "programs_coll00",
+    "name": "programs",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "options": {}
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": "@request.auth.id != \"\"",
+    "createRule": "@request.auth.id != \"\"",
+    "updateRule": "@request.auth.id != \"\"",
+    "deleteRule": "@request.auth.id != \"\"",
+    "options": {}
+  },
+  {
+    "id": "terms_coll00000",
+    "name": "terms",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "options": {}
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": "@request.auth.id != \"\"",
+    "createRule": "@request.auth.id != \"\"",
+    "updateRule": "@request.auth.id != \"\"",
+    "deleteRule": "@request.auth.id != \"\"",
+    "options": {}
+  },
+  {
+    "id": "courses_coll000",
+    "name": "courses",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "program_id",
+        "type": "relation",
+        "required": true,
+        "options": {
+          "collectionId": "programs_coll00",
+          "cascadeDelete": true,
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "term_id",
+        "type": "relation",
+        "required": true,
+        "options": {
+          "collectionId": "terms_coll00000",
+          "cascadeDelete": true,
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "code",
+        "type": "text",
+        "required": true,
+        "options": {}
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "options": {}
+      },
+      {
+        "name": "akts",
+        "type": "number",
+        "options": {}
+      },
+      {
+        "name": "instructor",
+        "type": "text",
+        "options": {}
+      },
+      {
+        "name": "grade_level",
+        "type": "text",
+        "options": {}
+      },
+      {
+        "name": "pct_vize",
+        "type": "number",
+        "options": {}
+      },
+      {
+        "name": "pct_odev",
+        "type": "number",
+        "options": {}
+      },
+      {
+        "name": "pct_uygulama",
+        "type": "number",
+        "options": {}
+      },
+      {
+        "name": "pct_final",
+        "type": "number",
+        "options": {}
+      },
+      {
+        "name": "pct_but",
+        "type": "number",
+        "options": {}
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_courses_program_term ON courses (program_id, term_id)"
+    ],
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": "@request.auth.id != \"\"",
+    "createRule": "@request.auth.id != \"\"",
+    "updateRule": "@request.auth.id != \"\"",
+    "deleteRule": "@request.auth.id != \"\"",
+    "options": {}
+  },
+  {
+    "id": "prog_outcomes_c",
+    "name": "program_outcomes",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "program_id",
+        "type": "relation",
+        "required": true,
+        "options": {
+          "collectionId": "programs_coll00",
+          "cascadeDelete": true,
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "code",
+        "type": "text",
+        "required": true,
+        "options": {}
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "options": {}
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": "@request.auth.id != \"\"",
+    "createRule": "@request.auth.id != \"\"",
+    "updateRule": "@request.auth.id != \"\"",
+    "deleteRule": "@request.auth.id != \"\"",
+    "options": {}
+  },
+  {
+    "id": "cour_outcomes_c",
+    "name": "course_outcomes",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "course_id",
+        "type": "relation",
+        "required": true,
+        "options": {
+          "collectionId": "courses_coll000",
+          "cascadeDelete": true,
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "code",
+        "type": "text",
+        "required": true,
+        "options": {}
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "options": {}
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": "@request.auth.id != \"\"",
+    "createRule": "@request.auth.id != \"\"",
+    "updateRule": "@request.auth.id != \"\"",
+    "deleteRule": "@request.auth.id != \"\"",
+    "options": {}
+  },
+  {
+    "id": "matrix_coll0000",
+    "name": "matrix",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "course_id",
+        "type": "relation",
+        "required": true,
+        "options": {
+          "collectionId": "courses_coll000",
+          "cascadeDelete": true,
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "dc_code",
+        "type": "text",
+        "required": true,
+        "options": {}
+      },
+      {
+        "name": "pc_code",
+        "type": "text",
+        "required": true,
+        "options": {}
+      },
+      {
+        "name": "value",
+        "type": "number",
+        "options": {}
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_matrix_course_dc_pc ON matrix (course_id, dc_code, pc_code)"
+    ],
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": "@request.auth.id != \"\"",
+    "createRule": "@request.auth.id != \"\"",
+    "updateRule": "@request.auth.id != \"\"",
+    "deleteRule": "@request.auth.id != \"\"",
+    "options": {}
+  },
+  {
+    "id": "questions_coll",
+    "name": "questions",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "course_id",
+        "type": "relation",
+        "required": true,
+        "options": {
+          "collectionId": "courses_coll000",
+          "cascadeDelete": true,
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "code",
+        "type": "text",
+        "required": true,
+        "options": {}
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "options": {}
+      },
+      {
+        "name": "exam_type",
+        "type": "text",
+        "required": true,
+        "options": {}
+      },
+      {
+        "name": "question_type",
+        "type": "text",
+        "required": true,
+        "options": {}
+      },
+      {
+        "name": "dc_code",
+        "type": "text",
+        "options": {}
+      },
+      {
+        "name": "max_score",
+        "type": "number",
+        "options": {}
+      },
+      {
+        "name": "answer_key",
+        "type": "text",
+        "options": {}
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": "@request.auth.id != \"\"",
+    "createRule": "@request.auth.id != \"\"",
+    "updateRule": "@request.auth.id != \"\"",
+    "deleteRule": "@request.auth.id != \"\"",
+    "options": {}
+  },
+  {
+    "id": "students_coll0",
+    "name": "students",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "course_id",
+        "type": "relation",
+        "required": true,
+        "options": {
+          "collectionId": "courses_coll000",
+          "cascadeDelete": true,
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "student_no",
+        "type": "text",
+        "required": true,
+        "options": {}
+      },
+      {
+        "name": "full_name",
+        "type": "text",
+        "required": true,
+        "options": {}
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_student_course_no ON students (course_id, student_no)"
+    ],
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": "@request.auth.id != \"\"",
+    "createRule": "@request.auth.id != \"\"",
+    "updateRule": "@request.auth.id != \"\"",
+    "deleteRule": "@request.auth.id != \"\"",
+    "options": {}
+  },
+  {
+    "id": "stud_grades_co",
+    "name": "student_grades",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "student_id",
+        "type": "relation",
+        "required": true,
+        "options": {
+          "collectionId": "students_coll0",
+          "cascadeDelete": true,
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "question_id",
+        "type": "relation",
+        "required": true,
+        "options": {
+          "collectionId": "questions_coll",
+          "cascadeDelete": true,
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "score",
+        "type": "number",
+        "options": {}
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_grade_student_question ON student_grades (student_id, question_id)"
+    ],
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": "@request.auth.id != \"\"",
+    "createRule": "@request.auth.id != \"\"",
+    "updateRule": "@request.auth.id != \"\"",
+    "deleteRule": "@request.auth.id != \"\"",
+    "options": {}
+  }
+]
