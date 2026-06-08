@@ -7,7 +7,7 @@ migrate((app) => {
     "name": "programs",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "system": false,
         "id": "prg_name_field",

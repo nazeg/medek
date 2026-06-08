@@ -7,7 +7,7 @@ migrate((app) => {
     "name": "terms",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "system": false,
         "id": "trm_name_field",

@@ -7,7 +7,7 @@ migrate((app) => {
     "name": "matrix",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "system": false,
         "id": "mat_course_id_",

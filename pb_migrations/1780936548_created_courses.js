@@ -7,7 +7,7 @@ migrate((app) => {
     "name": "courses",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "system": false,
         "id": "crs_prog_id_fld",

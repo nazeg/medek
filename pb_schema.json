@@ -4,7 +4,7 @@
     "name": "users",
     "type": "auth",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "id": "users_name",
         "name": "name",
@@ -61,7 +61,7 @@
     "name": "programs",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "id": "prg_name_field",
         "name": "name",
@@ -84,7 +84,7 @@
     "name": "terms",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "id": "trm_name_field",
         "name": "name",
@@ -107,7 +107,7 @@
     "name": "courses",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "id": "crs_prog_id_fld",
         "name": "program_id",
@@ -209,7 +209,7 @@
     "name": "program_outcomes",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "id": "po_prog_id_fld",
         "name": "program_id",
@@ -248,7 +248,7 @@
     "name": "course_outcomes",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "id": "co_course_id_f",
         "name": "course_id",
@@ -287,7 +287,7 @@
     "name": "matrix",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "id": "mat_course_id_",
         "name": "course_id",
@@ -335,7 +335,7 @@
     "name": "questions",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "id": "q_course_id_fl",
         "name": "course_id",
@@ -406,7 +406,7 @@
     "name": "students",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "id": "s_course_id_fl",
         "name": "course_id",
@@ -448,7 +448,7 @@
     "name": "student_grades",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "id": "g_student_id_f",
         "name": "student_id",

@@ -7,7 +7,7 @@ migrate((app) => {
     "name": "questions",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "system": false,
         "id": "q_course_id_fl",

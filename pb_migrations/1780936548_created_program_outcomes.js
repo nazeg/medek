@@ -7,7 +7,7 @@ migrate((app) => {
     "name": "program_outcomes",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
         "system": false,
         "id": "po_prog_id_fld",
